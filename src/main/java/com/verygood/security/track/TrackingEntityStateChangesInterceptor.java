@@ -15,7 +15,7 @@ public class TrackingEntityStateChangesInterceptor extends EmptyInterceptor {
   // can't use constructor injection cause interceptor is created using new operator
   private transient EntityStateTrackReporter entityStateTrackReporter;
 
-  void setEntityStateTrackReporter(EntityStateTrackReporter entityStateTrackReporter) {
+  public void setEntityStateTrackReporter(EntityStateTrackReporter entityStateTrackReporter) {
     this.entityStateTrackReporter = entityStateTrackReporter;
     checkEntityChangesTrackerExistence();
   }

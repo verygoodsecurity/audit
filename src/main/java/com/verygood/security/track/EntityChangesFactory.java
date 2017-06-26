@@ -34,8 +34,8 @@ class EntityChangesFactory {
     List<ChangedEntityField> changedEntityFields = new ArrayList<>();
     boolean trackAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
-      boolean trackField = field.isAnnotationPresent(Tracked.class);
-      if (trackAllFields || trackField) {
+      Tracked tracked = field.getAnnotation(Tracked.class);
+      if (trackAllFields || (tracked != null && !tracked.exclude())) {
         for (int i = 0; i < propertyNames.length; i++) {
           if (propertyNames[i].equals(field.getName())) {
             Object oldValue = previousState.length > 0 ? previousState[i] : null;

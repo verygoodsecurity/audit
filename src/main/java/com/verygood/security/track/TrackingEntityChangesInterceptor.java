@@ -8,7 +8,7 @@ public class TrackingEntityChangesInterceptor extends EmptyInterceptor {
   // can't use constructor injection cause interceptor is created using new operator
   private transient EntityChangesTracker entityChangesTracker;
 
-  public void setEntityChangesTracker(EntityChangesTracker entityChangesTracker) {
+  void setEntityChangesTracker(EntityChangesTracker entityChangesTracker) {
     this.entityChangesTracker = entityChangesTracker;
     checkEntityChangesTrackerExistence();
   }

@@ -1,4 +1,4 @@
-package com.verygood.security.audit.data;
+package com.verygood.security.track.data;
 
 import com.google.common.base.Objects;
 

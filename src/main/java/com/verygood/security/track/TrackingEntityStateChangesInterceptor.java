@@ -1,7 +1,7 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.data.Action;
-import com.verygood.security.audit.meta.Trackable;
+import com.verygood.security.track.data.Action;
+import com.verygood.security.track.meta.Trackable;
 
 import org.hibernate.EmptyInterceptor;
 

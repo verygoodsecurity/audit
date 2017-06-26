@@ -1,9 +1,9 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.entity.Account;
-import com.verygood.security.audit.entity.Address;
-import com.verygood.security.audit.entity.Client;
-import com.verygood.security.audit.sqltracker.SqlCountTrackerDatasource;
+import com.verygood.security.track.entity.Account;
+import com.verygood.security.track.entity.Address;
+import com.verygood.security.track.entity.Client;
+import com.verygood.security.track.sqltracker.SqlCountTrackerDatasource;
 
 import org.h2.jdbcx.JdbcDataSource;
 import org.hibernate.Interceptor;

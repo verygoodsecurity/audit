@@ -1,6 +1,6 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.data.TrackableEntity;
+import com.verygood.security.track.data.TrackableEntity;
 
 public interface TestEntityStateTrackReporter {
   void onSave(TrackableEntity modifiedEntity);

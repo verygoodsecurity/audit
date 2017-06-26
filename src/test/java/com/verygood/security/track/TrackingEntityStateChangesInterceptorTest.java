@@ -1,20 +1,20 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.data.TrackableEntity;
-import com.verygood.security.audit.entity.Account;
-import com.verygood.security.audit.entity.Address;
-import com.verygood.security.audit.entity.Client;
-import com.verygood.security.audit.sqltracker.QueryCountInfoHolder;
+import com.verygood.security.track.data.TrackableEntity;
+import com.verygood.security.track.entity.Account;
+import com.verygood.security.track.entity.Address;
+import com.verygood.security.track.entity.Client;
+import com.verygood.security.track.sqltracker.QueryCountInfoHolder;
 
 import org.junit.After;
 import org.junit.Test;
 
 import java.util.List;
 
-import static com.verygood.security.audit.sqltracker.AssertSqlCount.assertDeleteCount;
-import static com.verygood.security.audit.sqltracker.AssertSqlCount.assertInsertCount;
-import static com.verygood.security.audit.sqltracker.AssertSqlCount.assertSqlCount;
-import static com.verygood.security.audit.sqltracker.AssertSqlCount.assertUpdateCount;
+import static com.verygood.security.track.sqltracker.AssertSqlCount.assertDeleteCount;
+import static com.verygood.security.track.sqltracker.AssertSqlCount.assertInsertCount;
+import static com.verygood.security.track.sqltracker.AssertSqlCount.assertSqlCount;
+import static com.verygood.security.track.sqltracker.AssertSqlCount.assertUpdateCount;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;

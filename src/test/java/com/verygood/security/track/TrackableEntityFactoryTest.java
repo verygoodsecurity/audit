@@ -1,7 +1,7 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.data.Action;
-import com.verygood.security.audit.entity.Client;
+import com.verygood.security.track.data.Action;
+import com.verygood.security.track.entity.Client;
 
 import org.junit.Ignore;
 import org.junit.Test;

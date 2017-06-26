@@ -1,4 +1,4 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
 public class QueryCountInfo {
   private int selectCount;

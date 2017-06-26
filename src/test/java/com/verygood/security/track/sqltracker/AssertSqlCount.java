@@ -1,6 +1,6 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
-import static com.verygood.security.audit.sqltracker.QueryCountInfoHolder.getQueryInfo;
+import static com.verygood.security.track.sqltracker.QueryCountInfoHolder.getQueryInfo;
 
 public class AssertSqlCount {
 

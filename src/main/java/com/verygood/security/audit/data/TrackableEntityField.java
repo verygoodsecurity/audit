@@ -1,4 +1,4 @@
-package com.verygood.security.audit;
+package com.verygood.security.audit.data;
 
 import com.google.common.base.Objects;
 

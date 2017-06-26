@@ -1,5 +1,6 @@
 package com.verygood.security.audit;
 
+import com.verygood.security.audit.data.Action;
 import com.verygood.security.audit.entity.Client;
 
 import org.junit.Ignore;

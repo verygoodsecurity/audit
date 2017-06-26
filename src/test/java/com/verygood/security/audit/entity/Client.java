@@ -1,7 +1,7 @@
 package com.verygood.security.audit.entity;
 
-import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Tracked;
+import com.verygood.security.audit.meta.Trackable;
+import com.verygood.security.audit.meta.Tracked;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;

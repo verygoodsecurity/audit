@@ -1,5 +1,7 @@
 package com.verygood.security.audit;
 
+import com.verygood.security.audit.data.TrackableEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 

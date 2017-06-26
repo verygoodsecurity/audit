@@ -1,5 +1,6 @@
 package com.verygood.security.audit;
 
+import com.verygood.security.audit.data.TrackableEntity;
 import com.verygood.security.audit.entity.Account;
 import com.verygood.security.audit.entity.Address;
 import com.verygood.security.audit.entity.Client;

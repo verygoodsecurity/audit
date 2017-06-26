@@ -2,6 +2,11 @@ package com.verygood.security.audit;
 
 import com.google.common.base.Predicates;
 
+import com.verygood.security.audit.data.Action;
+import com.verygood.security.audit.data.TrackableEntity;
+import com.verygood.security.audit.data.TrackableEntityField;
+import com.verygood.security.audit.meta.Tracked;
+
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 

@@ -27,6 +27,10 @@ public class TrackableEntity {
     return clazz;
   }
 
+  public Action getAction() {
+    return action;
+  }
+
   public Set<TrackableEntityField> getTrackableEntityFields() {
     return Collections.unmodifiableSet(trackableEntityFields);
   }

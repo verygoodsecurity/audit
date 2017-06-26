@@ -1,7 +1,6 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.google.common.base.Predicates;
-
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -10,30 +9,33 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import static java.util.stream.Collectors.toList;
 
-class AuditFactory {
-  private AuditFactory() {
+class EntityChangesFactory {
+  private EntityChangesFactory() {
 
   }
 
-  static ModifiedEntityAudit createModifiedEntityAudit(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, AuditAction action) {
-    List<ModifiedEntityAuditField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
-    return new ModifiedEntityAudit(id, entity.getClass(), action, modifiedFields);
+  static ChangedEntity createChangedEntity(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
+    List<ChangedEntityField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
+    return new ChangedEntity(id, entity.getClass(), action, modifiedFields);
   }
 
-  private static List<ModifiedEntityAuditField> createModifiedFields(Object entity,
-                                                                     Object[] previousState,
-                                                                     Object[] currentState,
-                                                                     String[] propertyNames
+  private static List<ChangedEntityField> createModifiedFields(Object entity,
+                                                               Object[] previousState,
+                                                               Object[] currentState,
+                                                               String[] propertyNames
   ) {
-    List<ModifiedEntityAuditField> modifiedEntityAuditFields = new ArrayList<>();
+    List<ChangedEntityField> changedEntityFields = new ArrayList<>();
+    boolean trackAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
-      if (field.isAnnotationPresent(Audited.class)) {
+      boolean trackField = field.isAnnotationPresent(Tracked.class);
+      if (trackAllFields || trackField) {
         for (int i = 0; i < propertyNames.length; i++) {
           if (propertyNames[i].equals(field.getName())) {
             Object oldValue = previousState.length > 0 ? previousState[i] : null;
@@ -61,19 +63,19 @@ class AuditFactory {
               newValue = retrieveId(newValue);
             }
 
-            boolean areEqual = AuditUtils.areEqualOrCompareEqual(oldValue, newValue)
-                || AuditUtils.areEqualEmptyCollection(oldValue, newValue);
+            boolean areEqual = Utils.areEqualOrCompareEqual(oldValue, newValue)
+                || Utils.areEqualEmptyCollection(oldValue, newValue);
 
             if (areEqual) {
               continue;
             }
 
-            modifiedEntityAuditFields.add(new ModifiedEntityAuditField(field.getName(), oldValue, newValue));
+            changedEntityFields.add(new ChangedEntityField(field.getName(), oldValue, newValue));
           }
         }
       }
     }
-    return modifiedEntityAuditFields;
+    return changedEntityFields;
   }
 
   private static boolean isEntity(Object oldValue) {
@@ -82,14 +84,16 @@ class AuditFactory {
 
   private static Object retrieveCollectionIds(Object oldValue) {
     Collection elements = (Collection) oldValue;
-    boolean isEntities = elements.stream().allMatch(AuditFactory::isEntity);
+    //noinspection unchecked
+    boolean isEntities = elements.stream().allMatch(EntityChangesFactory::isEntity);
     return isEntities ? entitiesToIds(elements) : oldValue;
   }
 
   private static Object entitiesToIds(Collection elements) {
+    //noinspection unchecked
     return elements.stream()
-        .map(AuditFactory::retrieveId)
-        .filter(Predicates.notNull())
+        .map(EntityChangesFactory::retrieveId)
+        .filter(Objects::nonNull)
         .collect(toList());
   }
 
@@ -104,7 +108,7 @@ class AuditFactory {
   }
 
   private static Object retrieveWithReflection(Object entity) {
-    Field[] fields = entity.getClass().getDeclaredFields();
+    List<Field> fields = FieldUtils.getAllFieldsList(entity.getClass());
     for (Field field : fields) {
       if (field.isAnnotationPresent(Id.class)) {
         try {

@@ -1,4 +1,4 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
 
 import java.lang.annotation.ElementType;
@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Trackable {
+public @interface TrackChanges {
 }

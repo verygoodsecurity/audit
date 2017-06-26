@@ -1,4 +1,4 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
 class SqlCountMismatchException extends RuntimeException {
   SqlCountMismatchException(String statement, int expectedCount, int actualCount) {

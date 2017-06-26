@@ -1,9 +1,10 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
-import com.verygood.security.audit.entity.Account;
-import com.verygood.security.audit.entity.Address;
-import com.verygood.security.audit.entity.Client;
-import com.verygood.security.audit.sqltracker.SqlCountTrackerDatasource;
+import com.verygood.security.track.entity.Account;
+import com.verygood.security.track.entity.Address;
+import com.verygood.security.track.entity.Client;
+import com.verygood.security.track.interceptor.TestEntityChangesTracker;
+import com.verygood.security.track.sqltracker.SqlCountTrackerDatasource;
 
 import org.h2.jdbcx.JdbcDataSource;
 import org.hibernate.Interceptor;
@@ -20,8 +21,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 public abstract class BaseTest {
-  SessionFactory sf;
-  EntityManagerFactory emf;
+  private SessionFactory sf;
+  private EntityManagerFactory emf;
 
   @Before
   public void init() {
@@ -49,8 +50,8 @@ public abstract class BaseTest {
   }
 
   private Interceptor interceptor() {
-    AuditInterceptor interceptor = new AuditInterceptor();
-    interceptor.setAuditHandler(TestAuditHandler.getInstance());
+    TrackingEntityChangesInterceptor interceptor = new TrackingEntityChangesInterceptor();
+    interceptor.setEntityChangesTracker(TestEntityChangesTracker.getInstance());
     return interceptor;
   }
 
@@ -83,5 +84,9 @@ public abstract class BaseTest {
     dataSource.setUser("sa");
     dataSource.setPassword("");
     return dataSource;
+  }
+
+  protected EntityManagerFactory entityManagerFactory() {
+    return emf;
   }
 }

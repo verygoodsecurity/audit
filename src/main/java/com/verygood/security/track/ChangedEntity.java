@@ -1,17 +1,17 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class ModifiedEntityAudit {
+public class ChangedEntity {
   private final Serializable id;
   private final Class clazz;
-  private final AuditAction action;
-  private final List<ModifiedEntityAuditField> modifiedFields;
+  private final Action action;
+  private final List<ChangedEntityField> modifiedFields;
 
-  public ModifiedEntityAudit(Serializable id, Class clazz, AuditAction action, List<ModifiedEntityAuditField> modifiedFields) {
+  ChangedEntity(Serializable id, Class clazz, Action action, List<ChangedEntityField> modifiedFields) {
     this.id = id;
     this.clazz = clazz;
     this.action = action;
@@ -22,17 +22,17 @@ public class ModifiedEntityAudit {
     return id;
   }
 
-  public Class getClassName() {
+  public Class getClazz() {
     return clazz;
   }
 
-  public List<ModifiedEntityAuditField> getModifiedFields() {
+  public List<ChangedEntityField> getModifiedFields() {
     return modifiedFields;
   }
 
   @Override
   public String toString() {
-    return "ModifiedEntityAudit{" +
+    return "ChangedEntity{" +
         "id=" + id +
         ", clazz='" + clazz + '\'' +
         ", action=" + action +
@@ -43,8 +43,8 @@ public class ModifiedEntityAudit {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ModifiedEntityAudit)) return false;
-    ModifiedEntityAudit that = (ModifiedEntityAudit) o;
+    if (!(o instanceof ChangedEntity)) return false;
+    ChangedEntity that = (ChangedEntity) o;
     return Objects.equal(this.id, that.id)
         && Objects.equal(this.clazz, that.clazz)
         && action == that.action;

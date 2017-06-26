@@ -1,7 +1,7 @@
-package com.verygood.security.audit.entity;
+package com.verygood.security.track.entity;
 
-import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Audited;
+import com.verygood.security.track.TrackChanges;
+import com.verygood.security.track.Tracked;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -12,30 +12,40 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 
 @Entity
-@Trackable
+@TrackChanges
 public class Client {
   @Id
-  @GeneratedValue
-  @Audited
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+  @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
+  @Tracked
   private Long id;
 
-  @Audited
+  @Tracked
   private String name;
 
   @OneToMany(mappedBy = "client")
-  @Audited
+  @Tracked
   @Cascade(CascadeType.PERSIST)
   private List<Account> accounts = new ArrayList<>();
 
   @OneToOne(mappedBy = "client", fetch = FetchType.LAZY, optional = false)
-  @Cascade(CascadeType.PERSIST)
-  @Audited
+  @Tracked
   private Address address;
+
+  public Client() {
+  }
+
+  public Client(Address address) {
+    this.address = address;
+    address.setClient(this);
+  }
 
   public String getName() {
     return name;
@@ -50,21 +60,8 @@ public class Client {
     account.setClient(this);
   }
 
-  public void removeAccount(Account account) {
-    this.accounts.remove(account);
-    account.setClient(null);
-  }
-
-  public void addAddress(Address address) {
-    address.setClient(this);
-    this.address = address;
-  }
-
-  public void removeAddress() {
-    if (address != null) {
-      address.setClient(null);
-      this.address = null;
-    }
+  public Address getAddress() {
+    return address;
   }
 
   public Long getId() {

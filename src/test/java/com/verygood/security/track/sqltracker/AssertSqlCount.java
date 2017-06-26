@@ -1,6 +1,6 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
-import static com.verygood.security.audit.sqltracker.QueryCountInfoHolder.getQueryInfo;
+import static com.verygood.security.track.sqltracker.QueryCountInfoHolder.getQueryInfo;
 
 public class AssertSqlCount {
 
@@ -27,10 +27,6 @@ public class AssertSqlCount {
   public static void assertDeleteCount(int expectedDeleteCount) {
     assertSqlCount("delete", expectedDeleteCount, getQueryInfo().getDeleteCount());
 
-  }
-
-  public static void assertCallCount(int expectedCallCount) {
-    assertSqlCount("call", expectedCallCount, getQueryInfo().getCallCount());
   }
 
   private static void assertSqlCount(String statement, int expectedCount, int actualCount) {

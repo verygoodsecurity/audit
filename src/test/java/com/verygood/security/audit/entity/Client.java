@@ -1,7 +1,7 @@
 package com.verygood.security.audit.entity;
 
 import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Audited;
+import com.verygood.security.audit.Tracked;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -21,20 +21,20 @@ import javax.persistence.OneToOne;
 public class Client {
   @Id
   @GeneratedValue
-  @Audited
+  @Tracked
   private Long id;
 
-  @Audited
+  @Tracked
   private String name;
 
   @OneToMany(mappedBy = "client")
-  @Audited
+  @Tracked
   @Cascade(CascadeType.PERSIST)
   private List<Account> accounts = new ArrayList<>();
 
   @OneToOne(mappedBy = "client", fetch = FetchType.LAZY, optional = false)
   @Cascade(CascadeType.PERSIST)
-  @Audited
+  @Tracked
   private Address address;
 
   public String getName() {

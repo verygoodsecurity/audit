@@ -1,7 +1,7 @@
 package com.verygood.security.audit.entity;
 
 import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Audited;
+import com.verygood.security.audit.Tracked;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +17,7 @@ public class Address {
   @GeneratedValue
   private Long id;
 
-  @Audited
+  @Tracked
   private String street;
 
   @OneToOne(fetch = FetchType.LAZY)

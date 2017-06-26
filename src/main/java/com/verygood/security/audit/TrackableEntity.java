@@ -5,13 +5,13 @@ import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.List;
 
-public class ModifiedEntityAudit {
+public class TrackableEntity {
   private final Serializable id;
   private final Class clazz;
-  private final AuditAction action;
-  private final List<ModifiedEntityAuditField> modifiedFields;
+  private final Action action;
+  private final List<TrackableEntityField> modifiedFields;
 
-  public ModifiedEntityAudit(Serializable id, Class clazz, AuditAction action, List<ModifiedEntityAuditField> modifiedFields) {
+  public TrackableEntity(Serializable id, Class clazz, Action action, List<TrackableEntityField> modifiedFields) {
     this.id = id;
     this.clazz = clazz;
     this.action = action;
@@ -26,7 +26,7 @@ public class ModifiedEntityAudit {
     return clazz;
   }
 
-  public List<ModifiedEntityAuditField> getModifiedFields() {
+  public List<TrackableEntityField> getModifiedFields() {
     return modifiedFields;
   }
 
@@ -43,8 +43,8 @@ public class ModifiedEntityAudit {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ModifiedEntityAudit)) return false;
-    ModifiedEntityAudit that = (ModifiedEntityAudit) o;
+    if (!(o instanceof TrackableEntity)) return false;
+    TrackableEntity that = (TrackableEntity) o;
     return Objects.equal(this.id, that.id)
         && Objects.equal(this.clazz, that.clazz)
         && action == that.action;

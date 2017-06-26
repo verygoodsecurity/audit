@@ -2,12 +2,12 @@ package com.verygood.security.audit;
 
 import com.google.common.base.Objects;
 
-public class ModifiedEntityAuditField {
+public class TrackableEntityField {
   private final String name;
   private final Object oldValue;
   private final Object newValue;
 
-  ModifiedEntityAuditField(String name, Object oldValue, Object newValue) {
+  TrackableEntityField(String name, Object oldValue, Object newValue) {
     this.name = name;
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -16,8 +16,8 @@ public class ModifiedEntityAuditField {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ModifiedEntityAuditField)) return false;
-    ModifiedEntityAuditField that = (ModifiedEntityAuditField) o;
+    if (!(o instanceof TrackableEntityField)) return false;
+    TrackableEntityField that = (TrackableEntityField) o;
     return Objects.equal(this.name, that.name);
   }
 

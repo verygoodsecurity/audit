@@ -1,5 +1,5 @@
 package com.verygood.security.audit;
 
-public enum AuditAction {
+public enum Action {
   SAVE, UPDATE, DELETE
 }

@@ -4,12 +4,12 @@ import org.hibernate.EmptyInterceptor;
 
 import java.io.Serializable;
 
-public class AuditInterceptor extends EmptyInterceptor {
+public class TrackingEntityStateChangesInterceptor extends EmptyInterceptor {
   // can't use constructor injection cause interceptor is created using new operator
-  private AuditHandler auditHandler;
+  private TestEntityStateTrackReporter testEntityStateTrackReporter;
 
-  public void setAuditHandler(AuditHandler auditHandler) {
-    this.auditHandler = auditHandler;
+  public void setTestEntityStateTrackReporter(TestEntityStateTrackReporter testEntityStateTrackReporter) {
+    this.testEntityStateTrackReporter = testEntityStateTrackReporter;
     checkAuditHandler();
   }
 
@@ -17,14 +17,14 @@ public class AuditInterceptor extends EmptyInterceptor {
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, org.hibernate.type.Type[] types) {
     checkAuditHandler();
     if (entity.getClass().isAnnotationPresent(Trackable.class)) {
-      auditHandler.onSave(
-          AuditFactory.createModifiedEntityAudit(
+      testEntityStateTrackReporter.onSave(
+          TrackableEntityFactory.createModifiedEntityAudit(
               id,
               entity,
               new Object[]{},
               state,
               propertyNames,
-              AuditAction.SAVE
+              Action.SAVE
           )
       );
     }
@@ -35,14 +35,14 @@ public class AuditInterceptor extends EmptyInterceptor {
   public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, org.hibernate.type.Type[] types) {
     checkAuditHandler();
     if (entity.getClass().isAnnotationPresent(Trackable.class)) {
-      auditHandler.onUpdate(
-          AuditFactory.createModifiedEntityAudit(
+      testEntityStateTrackReporter.onUpdate(
+          TrackableEntityFactory.createModifiedEntityAudit(
               id,
               entity,
               previousState,
               currentState,
               propertyNames,
-              AuditAction.UPDATE
+              Action.UPDATE
           )
       );
     }
@@ -53,21 +53,21 @@ public class AuditInterceptor extends EmptyInterceptor {
   public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, org.hibernate.type.Type[] types) {
     checkAuditHandler();
     if (entity.getClass().isAnnotationPresent(Trackable.class)) {
-      auditHandler.onDelete(
-          AuditFactory.createModifiedEntityAudit(
+      testEntityStateTrackReporter.onDelete(
+          TrackableEntityFactory.createModifiedEntityAudit(
               id,
               entity,
               state,
               new Object[]{},
               propertyNames,
-              AuditAction.DELETE
+              Action.DELETE
           )
       );
     }
   }
 
   private void checkAuditHandler() {
-    if (auditHandler == null) {
+    if (testEntityStateTrackReporter == null) {
       throw new IllegalStateException("Please provide AuditHandler");
     }
   }

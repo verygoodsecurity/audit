@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;
 
-public class AuditInterceptorTest extends BaseTest {
+public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
   @After
   public void cleanUp() {
@@ -27,7 +27,7 @@ public class AuditInterceptorTest extends BaseTest {
 
   private void clearContext() {
     QueryCountInfoHolder.clear();
-    TestAuditHandler.getInstance().clear();
+    TestTestEntityStateTrackReporter.getInstance().clear();
   }
 
   @Test
@@ -47,9 +47,9 @@ public class AuditInterceptorTest extends BaseTest {
       em.persist(client);
       em.flush();
 
-      List<ModifiedEntityAudit> inserts = TestAuditHandler.getInstance().getInserts();
-      List<ModifiedEntityAudit> updates = TestAuditHandler.getInstance().getUpdates();
-      List<ModifiedEntityAudit> deletes = TestAuditHandler.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(3));
       assertThat(updates.size(), is(0));
@@ -70,9 +70,9 @@ public class AuditInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<ModifiedEntityAudit> inserts = TestAuditHandler.getInstance().getInserts();
-      List<ModifiedEntityAudit> updates = TestAuditHandler.getInstance().getUpdates();
-      List<ModifiedEntityAudit> deletes = TestAuditHandler.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(1));
@@ -93,9 +93,9 @@ public class AuditInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<ModifiedEntityAudit> inserts = TestAuditHandler.getInstance().getInserts();
-      List<ModifiedEntityAudit> updates = TestAuditHandler.getInstance().getUpdates();
-      List<ModifiedEntityAudit> deletes = TestAuditHandler.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(0));

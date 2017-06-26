@@ -49,8 +49,8 @@ public abstract class BaseTest {
   }
 
   private Interceptor interceptor() {
-    AuditInterceptor interceptor = new AuditInterceptor();
-    interceptor.setAuditHandler(TestAuditHandler.getInstance());
+    TrackingEntityStateChangesInterceptor interceptor = new TrackingEntityStateChangesInterceptor();
+    interceptor.setTestEntityStateTrackReporter(TestTestEntityStateTrackReporter.getInstance());
     return interceptor;
   }
 

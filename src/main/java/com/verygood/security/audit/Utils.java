@@ -6,9 +6,9 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Collection;
 
-class AuditUtils {
+class Utils {
 
-  private AuditUtils() {
+  private Utils() {
 
   }
 

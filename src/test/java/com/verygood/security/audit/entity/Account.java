@@ -1,7 +1,7 @@
 package com.verygood.security.audit.entity;
 
 import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Audited;
+import com.verygood.security.audit.Tracked;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,15 +15,15 @@ import javax.persistence.ManyToOne;
 public class Account {
   @Id
   @GeneratedValue
-  @Audited
+  @Tracked
   private Long id;
 
-  @Audited
+  @Tracked
   private Integer amount;
 
   @JoinColumn(name = "id_client")
   @ManyToOne(fetch = FetchType.LAZY)
-  @Audited
+  @Tracked
   private Client client;
 
   public Integer getAmount() {

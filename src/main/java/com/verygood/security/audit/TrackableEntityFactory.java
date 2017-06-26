@@ -16,24 +16,24 @@ import javax.persistence.Id;
 
 import static java.util.stream.Collectors.toList;
 
-class AuditFactory {
-  private AuditFactory() {
+class TrackableEntityFactory {
+  private TrackableEntityFactory() {
 
   }
 
-  static ModifiedEntityAudit createModifiedEntityAudit(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, AuditAction action) {
-    List<ModifiedEntityAuditField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
-    return new ModifiedEntityAudit(id, entity.getClass(), action, modifiedFields);
+  static TrackableEntity createModifiedEntityAudit(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
+    List<TrackableEntityField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
+    return new TrackableEntity(id, entity.getClass(), action, modifiedFields);
   }
 
-  private static List<ModifiedEntityAuditField> createModifiedFields(Object entity,
-                                                                     Object[] previousState,
-                                                                     Object[] currentState,
-                                                                     String[] propertyNames
+  private static List<TrackableEntityField> createModifiedFields(Object entity,
+                                                                 Object[] previousState,
+                                                                 Object[] currentState,
+                                                                 String[] propertyNames
   ) {
-    List<ModifiedEntityAuditField> modifiedEntityAuditFields = new ArrayList<>();
+    List<TrackableEntityField> trackableEntityFields = new ArrayList<>();
     for (Field field : entity.getClass().getDeclaredFields()) {
-      if (field.isAnnotationPresent(Audited.class)) {
+      if (field.isAnnotationPresent(Tracked.class)) {
         for (int i = 0; i < propertyNames.length; i++) {
           if (propertyNames[i].equals(field.getName())) {
             Object oldValue = previousState.length > 0 ? previousState[i] : null;
@@ -61,19 +61,19 @@ class AuditFactory {
               newValue = retrieveId(newValue);
             }
 
-            boolean areEqual = AuditUtils.areEqualOrCompareEqual(oldValue, newValue)
-                || AuditUtils.areEqualEmptyCollection(oldValue, newValue);
+            boolean areEqual = Utils.areEqualOrCompareEqual(oldValue, newValue)
+                || Utils.areEqualEmptyCollection(oldValue, newValue);
 
             if (areEqual) {
               continue;
             }
 
-            modifiedEntityAuditFields.add(new ModifiedEntityAuditField(field.getName(), oldValue, newValue));
+            trackableEntityFields.add(new TrackableEntityField(field.getName(), oldValue, newValue));
           }
         }
       }
     }
-    return modifiedEntityAuditFields;
+    return trackableEntityFields;
   }
 
   private static boolean isEntity(Object oldValue) {
@@ -82,13 +82,13 @@ class AuditFactory {
 
   private static Object retrieveCollectionIds(Object oldValue) {
     Collection elements = (Collection) oldValue;
-    boolean isEntities = elements.stream().allMatch(AuditFactory::isEntity);
+    boolean isEntities = elements.stream().allMatch(TrackableEntityFactory::isEntity);
     return isEntities ? entitiesToIds(elements) : oldValue;
   }
 
   private static Object entitiesToIds(Collection elements) {
     return elements.stream()
-        .map(AuditFactory::retrieveId)
+        .map(TrackableEntityFactory::retrieveId)
         .filter(Predicates.notNull())
         .collect(toList());
   }

@@ -5,7 +5,6 @@ public class QueryCountInfo {
   private int insertCount;
   private int updateCount;
   private int deleteCount;
-  private int callCount;
 
   void incrementSelectCount() {
     selectCount++;
@@ -23,20 +22,15 @@ public class QueryCountInfo {
     deleteCount++;
   }
 
-  public void incrementCallCount() {
-    callCount++;
-  }
-
   public void clear() {
     selectCount = 0;
     insertCount = 0;
     updateCount = 0;
     deleteCount = 0;
-    callCount = 0;
   }
 
   public int countAll() {
-    return selectCount + insertCount + updateCount + deleteCount + callCount;
+    return selectCount + insertCount + updateCount + deleteCount;
   }
 
   public int getSelectCount() {
@@ -53,9 +47,5 @@ public class QueryCountInfo {
 
   public int getDeleteCount() {
     return deleteCount;
-  }
-
-  public int getCallCount() {
-    return callCount;
   }
 }

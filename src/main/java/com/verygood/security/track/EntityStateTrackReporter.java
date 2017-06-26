@@ -2,7 +2,7 @@ package com.verygood.security.track;
 
 import com.verygood.security.track.data.TrackableEntity;
 
-public interface TestEntityStateTrackReporter {
+public interface EntityStateTrackReporter {
   void onSave(TrackableEntity modifiedEntity);
 
   void onUpdate(TrackableEntity modifiedEntity);

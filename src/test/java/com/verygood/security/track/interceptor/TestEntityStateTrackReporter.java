@@ -1,22 +1,23 @@
-package com.verygood.security.track;
+package com.verygood.security.track.interceptor;
 
 import com.verygood.security.track.data.TrackableEntity;
+import com.verygood.security.track.EntityStateTrackReporter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestTestEntityStateTrackReporter implements TestEntityStateTrackReporter {
+public class TestEntityStateTrackReporter implements EntityStateTrackReporter {
 
-  private static final TestTestEntityStateTrackReporter INSTANCE = new TestTestEntityStateTrackReporter();
+  private static final TestEntityStateTrackReporter INSTANCE = new TestEntityStateTrackReporter();
   private static List<TrackableEntity> inserts = new ArrayList<>();
   private static List<TrackableEntity> updates = new ArrayList<>();
   private static List<TrackableEntity> deletes = new ArrayList<>();
 
-  private TestTestEntityStateTrackReporter() {
+  private TestEntityStateTrackReporter() {
 
   }
 
-  public static TestTestEntityStateTrackReporter getInstance() {
+  public static TestEntityStateTrackReporter getInstance() {
     return INSTANCE;
   }
 

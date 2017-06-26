@@ -4,6 +4,7 @@ import com.verygood.security.track.data.TrackableEntity;
 import com.verygood.security.track.entity.Account;
 import com.verygood.security.track.entity.Address;
 import com.verygood.security.track.entity.Client;
+import com.verygood.security.track.interceptor.TestEntityStateTrackReporter;
 import com.verygood.security.track.sqltracker.QueryCountInfoHolder;
 
 import org.junit.After;
@@ -28,7 +29,7 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
   private void clearContext() {
     QueryCountInfoHolder.clear();
-    TestTestEntityStateTrackReporter.getInstance().clear();
+    TestEntityStateTrackReporter.getInstance().clear();
   }
 
   @Test
@@ -48,9 +49,9 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
       em.persist(client);
       em.flush();
 
-      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(3));
       assertThat(updates.size(), is(0));
@@ -71,9 +72,9 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(1));
@@ -94,9 +95,9 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<TrackableEntity> inserts = TestTestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestTestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestTestEntityStateTrackReporter.getInstance().getDeletes();
+      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
+      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
+      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(0));

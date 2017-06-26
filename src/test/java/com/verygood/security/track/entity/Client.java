@@ -12,15 +12,18 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 @Trackable
 public class Client {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+  @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
   @Tracked
   private Long id;
 
@@ -37,6 +40,14 @@ public class Client {
   @Tracked
   private Address address;
 
+  public Client() {
+  }
+
+  public Client(Address address) {
+    this.address = address;
+    address.setClient(this);
+  }
+
   public String getName() {
     return name;
   }
@@ -48,23 +59,6 @@ public class Client {
   public void addAccount(Account account) {
     this.accounts.add(account);
     account.setClient(this);
-  }
-
-  public void removeAccount(Account account) {
-    this.accounts.remove(account);
-    account.setClient(null);
-  }
-
-  public void addAddress(Address address) {
-    address.setClient(this);
-    this.address = address;
-  }
-
-  public void removeAddress() {
-    if (address != null) {
-      address.setClient(null);
-      this.address = null;
-    }
   }
 
   public Long getId() {
@@ -81,5 +75,9 @@ public class Client {
 
   public void setAccounts(List<Account> accounts) {
     this.accounts = accounts;
+  }
+
+  public Address getAddress() {
+    return address;
   }
 }

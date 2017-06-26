@@ -1,10 +1,11 @@
 package com.verygood.security.track;
 
-import com.google.common.base.Predicates;
-
 import com.verygood.security.track.data.Action;
 import com.verygood.security.track.data.TrackableEntity;
 import com.verygood.security.track.data.TrackableEntityField;
+import com.verygood.security.track.exception.IllegalTrackingAnnotationException;
+import com.verygood.security.track.meta.NotTracked;
+import com.verygood.security.track.meta.Trackable;
 import com.verygood.security.track.meta.Tracked;
 
 import org.hibernate.Hibernate;
@@ -12,9 +13,11 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,19 +29,30 @@ class TrackableEntityFactory {
 
   }
 
-  static TrackableEntity createModifiedEntityAudit(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
-    List<TrackableEntityField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
-    return new TrackableEntity(id, entity.getClass(), action, modifiedFields);
+  static Optional<TrackableEntity> createTrackableEntity(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
+    if (!entity.getClass().isAnnotationPresent(Trackable.class)) {
+      return Optional.empty();
+    }
+    Set<TrackableEntityField> modifiedFields = createModifiedFields(entity, previousState, currentState, propertyNames);
+    return Optional.of(new TrackableEntity(id, entity.getClass(), action, modifiedFields));
   }
 
-  private static List<TrackableEntityField> createModifiedFields(Object entity,
-                                                                 Object[] previousState,
-                                                                 Object[] currentState,
-                                                                 String[] propertyNames
+  private static Set<TrackableEntityField> createModifiedFields(Object entity,
+                                                                Object[] previousState,
+                                                                Object[] currentState,
+                                                                String[] propertyNames
   ) {
-    List<TrackableEntityField> trackableEntityFields = new ArrayList<>();
+    Set<TrackableEntityField> trackableEntityFields = new HashSet<>();
+    boolean areTrackedAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
-      if (field.isAnnotationPresent(Tracked.class)) {
+      boolean isTrackedField = field.isAnnotationPresent(Tracked.class);
+      boolean isNotTrackedField = field.isAnnotationPresent(NotTracked.class);
+
+      if (isTrackedField && isNotTrackedField) {
+        throw new IllegalTrackingAnnotationException("The field " + field.getName() + " should have either @Tracked or @NotTracked annotation");
+      }
+
+      if ((isTrackedField && !isNotTrackedField) || (!isTrackedField && areTrackedAllFields && !isNotTrackedField)) {
         for (int i = 0; i < propertyNames.length; i++) {
           if (propertyNames[i].equals(field.getName())) {
             Object oldValue = previousState.length > 0 ? previousState[i] : null;
@@ -87,14 +101,16 @@ class TrackableEntityFactory {
 
   private static Object retrieveCollectionIds(Object oldValue) {
     Collection elements = (Collection) oldValue;
+    //noinspection unchecked
     boolean isEntities = elements.stream().allMatch(TrackableEntityFactory::isEntity);
     return isEntities ? entitiesToIds(elements) : oldValue;
   }
 
   private static Object entitiesToIds(Collection elements) {
+    //noinspection unchecked
     return elements.stream()
         .map(TrackableEntityFactory::retrieveId)
-        .filter(Predicates.notNull())
+        .filter(Objects::nonNull)
         .collect(toList());
   }
 

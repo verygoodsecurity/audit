@@ -1,4 +1,4 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
 public class QueryCountInfoHolder {
   private static ThreadLocal<QueryCountInfo> queryInfoHolder = new ThreadLocal<QueryCountInfo>() {

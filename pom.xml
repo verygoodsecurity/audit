@@ -14,6 +14,9 @@
         <guava.version>22.0</guava.version>
         <apache.commons.version>3.6</apache.commons.version>
         <h2.version>1.4.191</h2.version>
+        <commons-collections.version>3.0</commons-collections.version>
+        <junit.version>4.12</junit.version>
+        <maven-compiler.version>3.1</maven-compiler.version>
     </properties>
 
     <dependencies>
@@ -21,12 +24,6 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-envers</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
 
@@ -47,14 +44,14 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.0</version>
+            <version>${commons-collections.version}</version>
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -68,7 +65,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.191</version>
+            <version>${h2.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -78,7 +75,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${maven-compiler.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

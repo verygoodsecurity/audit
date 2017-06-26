@@ -1,4 +1,4 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
 import com.google.common.base.Objects;
 
@@ -6,9 +6,9 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Collection;
 
-class AuditUtils {
+class Utils {
 
-  private AuditUtils() {
+  private Utils() {
 
   }
 

@@ -1,4 +1,4 @@
-package com.verygood.security.audit.sqltracker;
+package com.verygood.security.track.sqltracker;
 
 import java.sql.Array;
 import java.sql.Blob;

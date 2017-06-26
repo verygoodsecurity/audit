@@ -1,26 +1,33 @@
-package com.verygood.security.audit.entity;
+package com.verygood.security.track.entity;
 
-import com.verygood.security.audit.Trackable;
-import com.verygood.security.audit.Audited;
+import com.verygood.security.track.TrackChanges;
+import com.verygood.security.track.Tracked;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
 
 @Entity
-@Trackable
+@TrackChanges
+@Tracked
 public class Address {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
+  @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")
   private Long id;
 
-  @Audited
+  private String city;
   private String street;
 
   @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_client")
   @PrimaryKeyJoinColumn
   private Client client;
 
@@ -38,5 +45,13 @@ public class Address {
 
   public void setClient(Client client) {
     this.client = client;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
   }
 }

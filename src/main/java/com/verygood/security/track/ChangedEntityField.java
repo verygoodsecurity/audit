@@ -1,13 +1,13 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
 import com.google.common.base.Objects;
 
-public class ModifiedEntityAuditField {
+public class ChangedEntityField {
   private final String name;
   private final Object oldValue;
   private final Object newValue;
 
-  ModifiedEntityAuditField(String name, Object oldValue, Object newValue) {
+  ChangedEntityField(String name, Object oldValue, Object newValue) {
     this.name = name;
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -16,8 +16,8 @@ public class ModifiedEntityAuditField {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ModifiedEntityAuditField)) return false;
-    ModifiedEntityAuditField that = (ModifiedEntityAuditField) o;
+    if (!(o instanceof ChangedEntityField)) return false;
+    ChangedEntityField that = (ChangedEntityField) o;
     return Objects.equal(this.name, that.name);
   }
 
@@ -28,7 +28,7 @@ public class ModifiedEntityAuditField {
 
   @Override
   public String toString() {
-    return "ModifiedEntityAuditField{" +
+    return "ChangedEntityField{" +
         "name='" + name + '\'' +
         ", oldValue=" + oldValue +
         ", newValue=" + newValue +

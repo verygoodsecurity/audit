@@ -1,50 +1,51 @@
-package com.verygood.security.audit;
+package com.verygood.security.track;
 
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
-public class ModifiedEntityAudit {
+public class ChangedEntity {
   private final Serializable id;
   private final Class clazz;
-  private final AuditAction action;
-  private final List<ModifiedEntityAuditField> modifiedFields;
+  private final Action action;
+  private final List<ChangedEntityField> changedFields;
 
-  public ModifiedEntityAudit(Serializable id, Class clazz, AuditAction action, List<ModifiedEntityAuditField> modifiedFields) {
+  ChangedEntity(Serializable id, Class clazz, Action action, List<ChangedEntityField> changedFields) {
     this.id = id;
     this.clazz = clazz;
     this.action = action;
-    this.modifiedFields = modifiedFields;
+    this.changedFields = changedFields;
   }
 
   public Serializable getId() {
     return id;
   }
 
-  public Class getClassName() {
+  Class getClazz() {
     return clazz;
   }
 
-  public List<ModifiedEntityAuditField> getModifiedFields() {
-    return modifiedFields;
+  List<ChangedEntityField> getModifiedFields() {
+    return Collections.unmodifiableList(changedFields);
   }
 
   @Override
   public String toString() {
-    return "ModifiedEntityAudit{" +
+    return "ChangedEntity{" +
         "id=" + id +
-        ", clazz='" + clazz + '\'' +
+        ", clazz=" + clazz +
         ", action=" + action +
-        ", modifiedFields=" + modifiedFields +
+        ", changedFields=" + changedFields +
         '}';
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ModifiedEntityAudit)) return false;
-    ModifiedEntityAudit that = (ModifiedEntityAudit) o;
+    if (!(o instanceof ChangedEntity)) return false;
+    ChangedEntity that = (ChangedEntity) o;
     return Objects.equal(this.id, that.id)
         && Objects.equal(this.clazz, that.clazz)
         && action == that.action;

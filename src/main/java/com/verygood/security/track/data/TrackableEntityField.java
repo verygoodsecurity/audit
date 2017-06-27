@@ -7,7 +7,7 @@ public class TrackableEntityField {
   private final Object oldValue;
   private final Object newValue;
 
-  TrackableEntityField(String name, Object oldValue, Object newValue) {
+  public TrackableEntityField(String name, Object oldValue, Object newValue) {
     this.name = name;
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -28,7 +28,7 @@ public class TrackableEntityField {
 
   @Override
   public String toString() {
-    return "ModifiedEntityAuditField{" +
+    return "TrackableEntityField{" +
         "name='" + name + '\'' +
         ", oldValue=" + oldValue +
         ", newValue=" + newValue +

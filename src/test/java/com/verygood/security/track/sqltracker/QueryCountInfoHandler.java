@@ -19,10 +19,6 @@ public class QueryCountInfoHandler implements QueryHandler {
       case DELETE:
         queryCountInfo.incrementDeleteCount();
         break;
-      case CALL:
-        queryCountInfo.incrementCallCount();
-        break;
-
     }
   }
 
@@ -33,7 +29,6 @@ public class QueryCountInfoHandler implements QueryHandler {
 
     final QueryType type;
     switch (firstChar) {
-      case 'w': // query can be started 'with'
       case 's':
         type = QueryType.SELECT;
         break;
@@ -47,11 +42,7 @@ public class QueryCountInfoHandler implements QueryHandler {
         type = QueryType.DELETE;
         break;
       case 'c':
-      case '?':
         type = QueryType.CALL;
-        break;
-      case 'm':
-        type = QueryType.MERGE;
         break;
       default:
         throw new AssertionError("Wrong QueryType");

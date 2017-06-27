@@ -29,10 +29,6 @@ public class AssertSqlCount {
 
   }
 
-  public static void assertCallCount(int expectedCallCount) {
-    assertSqlCount("call", expectedCallCount, getQueryInfo().getCallCount());
-  }
-
   private static void assertSqlCount(String statement, int expectedCount, int actualCount) {
     if (expectedCount != actualCount) {
       throw new SqlCountMismatchException(statement, expectedCount, actualCount);

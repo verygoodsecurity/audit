@@ -3,40 +3,45 @@ package com.verygood.security.track.data;
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 public class TrackableEntity {
   private final Serializable id;
   private final Class clazz;
   private final Action action;
-  private final List<TrackableEntityField> modifiedFields;
+  private final Set<TrackableEntityField> trackableEntityFields;
 
-  public TrackableEntity(Serializable id, Class clazz, Action action, List<TrackableEntityField> modifiedFields) {
+  public TrackableEntity(Serializable id, Class clazz, Action action, Set<TrackableEntityField> trackableEntityFields) {
     this.id = id;
     this.clazz = clazz;
     this.action = action;
-    this.modifiedFields = modifiedFields;
+    this.trackableEntityFields = trackableEntityFields;
   }
 
   public Serializable getId() {
     return id;
   }
 
-  public Class getClassName() {
+  public Class getClazz() {
     return clazz;
   }
 
-  public List<TrackableEntityField> getModifiedFields() {
-    return modifiedFields;
+  public Action getAction() {
+    return action;
+  }
+
+  public Set<TrackableEntityField> getTrackableEntityFields() {
+    return Collections.unmodifiableSet(trackableEntityFields);
   }
 
   @Override
   public String toString() {
-    return "ModifiedEntityAudit{" +
+    return "TrackableEntity{" +
         "id=" + id +
-        ", clazz='" + clazz + '\'' +
+        ", clazz=" + clazz +
         ", action=" + action +
-        ", modifiedFields=" + modifiedFields +
+        ", trackableEntityFields=" + trackableEntityFields +
         '}';
   }
 

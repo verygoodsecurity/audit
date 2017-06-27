@@ -9,10 +9,10 @@ import org.junit.Test;
 public class TrackableEntityFactoryTest {
   @Test
   @Ignore //todo: not implemented yet
-  public void shouldCreateModifiedAuditEntity() {
+  public void shouldCreateTrackableEntity() {
     Client client = new Client();
 
-    TrackableEntityFactory.createModifiedEntityAudit(
+    TrackableEntityFactory.createTrackableEntity(
         1L,
         client,
         new Object[]{1L, },

@@ -6,19 +6,19 @@ import com.verygood.security.track.entity.Client;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TrackableEntityFactoryTest {
+public class EntityTrackingDataFactoryTest {
   @Test
   @Ignore //todo: not implemented yet
   public void shouldCreateTrackableEntity() {
     Client client = new Client();
 
-    TrackableEntityFactory.createTrackableEntity(
+    EntityTrackingFactory.createTrackableEntity(
         1L,
         client,
         new Object[]{1L, },
         new Object[]{},
         new String[]{},
-        Action.SAVE
+        Action.CREATED
     );
   }
 }

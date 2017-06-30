@@ -1,5 +1,6 @@
 package com.verygood.security.track.entity;
 
+import com.verygood.security.track.meta.NotTracked;
 import com.verygood.security.track.meta.Trackable;
 import com.verygood.security.track.meta.Tracked;
 
@@ -20,6 +21,7 @@ import javax.persistence.SequenceGenerator;
 
 @Entity
 @Trackable
+@Tracked
 public class Client {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
@@ -28,6 +30,7 @@ public class Client {
   private Long id;
 
   @Tracked
+  @NotTracked
   private String name;
 
   @OneToMany(mappedBy = "client")
@@ -39,6 +42,11 @@ public class Client {
   @Cascade(CascadeType.PERSIST)
   @Tracked
   private Address address;
+/*
+  @OneToMany
+  @MapKey(name = "")
+  @Tracked
+  private Map<String, String> config = new HashMap<>();*/
 
   public Client() {
   }
@@ -59,6 +67,11 @@ public class Client {
   public void addAccount(Account account) {
     this.accounts.add(account);
     account.setClient(this);
+  }
+
+  public void removeAccount(Account account) {
+    this.accounts.remove(account);
+    account.setClient(null);
   }
 
   public Long getId() {

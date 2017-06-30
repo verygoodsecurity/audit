@@ -1,13 +1,13 @@
 package com.verygood.security.track;
 
-import com.verygood.security.track.data.TrackableEntity;
-import com.verygood.security.track.data.TrackableEntityField;
+import com.verygood.security.track.data.EntityTrackingData;
+import com.verygood.security.track.data.EntityTrackingFieldData;
 import com.verygood.security.track.entity.Account;
 import com.verygood.security.track.entity.Address;
 import com.verygood.security.track.entity.Car;
 import com.verygood.security.track.entity.Client;
-import com.verygood.security.track.exception.IllegalTrackingAnnotationException;
-import com.verygood.security.track.interceptor.TestEntityStateTrackReporter;
+import com.verygood.security.track.exception.IllegalEntityTrackingFieldAnnotationException;
+import com.verygood.security.track.interceptor.TestEntityStateEntityTrackingListener;
 import com.verygood.security.track.sqltracker.QueryCountInfoHolder;
 
 import org.junit.After;
@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;
 
-public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
+public class EntityTrackingInterceptorTest extends BaseTest {
 
   @After
   public void cleanUp() {
@@ -37,7 +37,7 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
   private void clearContext() {
     QueryCountInfoHolder.clear();
-    TestEntityStateTrackReporter.getInstance().clear();
+    TestEntityStateEntityTrackingListener.getInstance().clear();
   }
 
   @Test
@@ -56,16 +56,16 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
       em.persist(client);
       em.flush();
 
-      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
+      List<EntityTrackingData> inserts = TestEntityStateEntityTrackingListener.getInstance().getInserts();
+      List<EntityTrackingData> updates = TestEntityStateEntityTrackingListener.getInstance().getUpdates();
+      List<EntityTrackingData> deletes = TestEntityStateEntityTrackingListener.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(3));
       assertThat(updates.size(), is(0));
       assertThat(deletes.size(), is(0));
 
-      Map<Class, Set<TrackableEntityField>> map = inserts.stream()
-          .collect(toMap(TrackableEntity::getClazz, TrackableEntity::getTrackableEntityFields));
+      Map<Class, Set<EntityTrackingFieldData>> map = inserts.stream()
+          .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields));
       assertThat(map.get(Client.class).size(), is(2));
       assertThat(map.get(Account.class).size(), is(2));
       assertThat(map.get(Address.class).size(), is(0));
@@ -85,16 +85,16 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
+      List<EntityTrackingData> inserts = TestEntityStateEntityTrackingListener.getInstance().getInserts();
+      List<EntityTrackingData> updates = TestEntityStateEntityTrackingListener.getInstance().getUpdates();
+      List<EntityTrackingData> deletes = TestEntityStateEntityTrackingListener.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(1));
       assertThat(deletes.size(), is(0));
 
-      Map<Class, Set<TrackableEntityField>> map = updates.stream()
-          .collect(toMap(TrackableEntity::getClazz, TrackableEntity::getTrackableEntityFields));
+      Map<Class, Set<EntityTrackingFieldData>> map = updates.stream()
+          .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields));
       assertThat(map.get(Client.class).size(), is(1));
       assertThat(map.get(Account.class), is(nullValue()));
       assertThat(map.get(Address.class), is(nullValue()));
@@ -116,16 +116,16 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
+      List<EntityTrackingData> inserts = TestEntityStateEntityTrackingListener.getInstance().getInserts();
+      List<EntityTrackingData> updates = TestEntityStateEntityTrackingListener.getInstance().getUpdates();
+      List<EntityTrackingData> deletes = TestEntityStateEntityTrackingListener.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(0));
       assertThat(updates.size(), is(0));
       assertThat(deletes.size(), is(1));
 
-      Map<Class, Set<TrackableEntityField>> map = deletes.stream()
-          .collect(toMap(TrackableEntity::getClazz, TrackableEntity::getTrackableEntityFields));
+      Map<Class, Set<EntityTrackingFieldData>> map = deletes.stream()
+          .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields));
       assertThat(map.get(Client.class), is(nullValue()));
       assertThat(map.get(Account.class), is(nullValue()));
       assertThat(map.get(Address.class).size(), is(1));
@@ -164,16 +164,16 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
       em.persist(address);
       em.flush();
 
-      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
-      List<TrackableEntity> updates = TestEntityStateTrackReporter.getInstance().getUpdates();
-      List<TrackableEntity> deletes = TestEntityStateTrackReporter.getInstance().getDeletes();
+      List<EntityTrackingData> inserts = TestEntityStateEntityTrackingListener.getInstance().getInserts();
+      List<EntityTrackingData> updates = TestEntityStateEntityTrackingListener.getInstance().getUpdates();
+      List<EntityTrackingData> deletes = TestEntityStateEntityTrackingListener.getInstance().getDeletes();
 
       assertThat(inserts.size(), is(1));
       assertThat(updates.size(), is(0));
       assertThat(deletes.size(), is(0));
 
-      Map<Class, Set<TrackableEntityField>> map = inserts.stream()
-          .collect(toMap(TrackableEntity::getClazz, TrackableEntity::getTrackableEntityFields));
+      Map<Class, Set<EntityTrackingFieldData>> map = inserts.stream()
+          .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields));
       assertThat(map.get(Client.class), is(nullValue()));
       assertThat(map.get(Account.class), is(nullValue()));
       assertThat(map.get(Address.class).size(), is(2));
@@ -193,13 +193,13 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
 
       em.flush();
 
-      List<TrackableEntity> inserts = TestEntityStateTrackReporter.getInstance().getInserts();
+      List<EntityTrackingData> inserts = TestEntityStateEntityTrackingListener.getInstance().getInserts();
       assertThat(inserts.size(), is(1));
 
-      Map<Class, Set<TrackableEntityField>> map = inserts.stream()
-          .collect(toMap(TrackableEntity::getClazz, TrackableEntity::getTrackableEntityFields));
+      Map<Class, Set<EntityTrackingFieldData>> map = inserts.stream()
+          .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields));
       assertThat(map.get(Client.class), is(nullValue()));
-      Set<TrackableEntityField> accountFields = map.get(Account.class);
+      Set<EntityTrackingFieldData> accountFields = map.get(Account.class);
       assertThat(accountFields.size(), is(1));
       assertThat(accountFields.stream().noneMatch(field -> field.getName().equals("number")), is(true));
       assertThat(map.get(Address.class), is(nullValue()));
@@ -209,7 +209,7 @@ public class TrackingEntityStateChangesInterceptorTest extends BaseTest {
     });
   }
 
-  @Test(expected = IllegalTrackingAnnotationException.class)
+  @Test(expected = IllegalEntityTrackingFieldAnnotationException.class)
   public void shouldThrowIllegalArgumentExceptionWhenBothTrackedAndNotTrackedAnnotationsAreProvided() {
     doInJPA(this::entityManagerFactory, em -> {
       Car car = new Car();

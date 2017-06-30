@@ -2,12 +2,12 @@ package com.verygood.security.track.data;
 
 import com.google.common.base.Objects;
 
-public class TrackableEntityField {
+public class EntityTrackingFieldData {
   private final String name;
   private final Object oldValue;
   private final Object newValue;
 
-  public TrackableEntityField(String name, Object oldValue, Object newValue) {
+  public EntityTrackingFieldData(String name, Object oldValue, Object newValue) {
     this.name = name;
     this.oldValue = oldValue;
     this.newValue = newValue;
@@ -16,8 +16,8 @@ public class TrackableEntityField {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TrackableEntityField)) return false;
-    TrackableEntityField that = (TrackableEntityField) o;
+    if (!(o instanceof EntityTrackingFieldData)) return false;
+    EntityTrackingFieldData that = (EntityTrackingFieldData) o;
     return Objects.equal(this.name, that.name);
   }
 
@@ -28,7 +28,7 @@ public class TrackableEntityField {
 
   @Override
   public String toString() {
-    return "TrackableEntityField{" +
+    return "EntityTrackingFieldData{" +
         "name='" + name + '\'' +
         ", oldValue=" + oldValue +
         ", newValue=" + newValue +

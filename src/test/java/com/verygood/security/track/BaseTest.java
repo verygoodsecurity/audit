@@ -4,7 +4,7 @@ import com.verygood.security.track.entity.Account;
 import com.verygood.security.track.entity.Address;
 import com.verygood.security.track.entity.Car;
 import com.verygood.security.track.entity.Client;
-import com.verygood.security.track.interceptor.TestEntityStateTrackReporter;
+import com.verygood.security.track.interceptor.TestEntityStateEntityTrackingListener;
 import com.verygood.security.track.sqltracker.SqlCountTrackerDatasource;
 
 import org.h2.jdbcx.JdbcDataSource;
@@ -51,8 +51,8 @@ public abstract class BaseTest {
   }
 
   private Interceptor interceptor() {
-    TrackingEntityStateChangesInterceptor interceptor = new TrackingEntityStateChangesInterceptor();
-    interceptor.setEntityStateTrackReporter(TestEntityStateTrackReporter.getInstance());
+    EntityTrackingInterceptor interceptor = new EntityTrackingInterceptor();
+    interceptor.setEntityTrackingListener(TestEntityStateEntityTrackingListener.getInstance());
     return interceptor;
   }
 
@@ -71,7 +71,7 @@ public abstract class BaseTest {
     properties.put(AvailableSettings.HBM2DDL_AUTO, "create");
     properties.put(AvailableSettings.DATASOURCE, dataSource());
     properties.put(AvailableSettings.INTERCEPTOR, interceptor());
-    properties.put(AvailableSettings.SHOW_SQL, false);
+    properties.put(AvailableSettings.SHOW_SQL, true);
     properties.put(AvailableSettings.FORMAT_SQL, true);
     return properties;
   }

@@ -6,17 +6,21 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-public class TrackableEntity {
+public class EntityTrackingData {
   private final Serializable id;
   private final Class clazz;
   private final Action action;
-  private final Set<TrackableEntityField> trackableEntityFields;
+  private final Set<EntityTrackingFieldData> entityTrackingFields;
 
-  public TrackableEntity(Serializable id, Class clazz, Action action, Set<TrackableEntityField> trackableEntityFields) {
+  public EntityTrackingData(Serializable id, Class clazz, Action action, Set<EntityTrackingFieldData> entityTrackingFields) {
     this.id = id;
     this.clazz = clazz;
     this.action = action;
-    this.trackableEntityFields = trackableEntityFields;
+    this.entityTrackingFields = entityTrackingFields;
+  }
+
+  public Set<EntityTrackingFieldData> getEntityTrackingFields() {
+    return Collections.unmodifiableSet(entityTrackingFields);
   }
 
   public Serializable getId() {
@@ -31,25 +35,21 @@ public class TrackableEntity {
     return action;
   }
 
-  public Set<TrackableEntityField> getTrackableEntityFields() {
-    return Collections.unmodifiableSet(trackableEntityFields);
-  }
-
   @Override
   public String toString() {
-    return "TrackableEntity{" +
+    return "EntityTrackingData{" +
         "id=" + id +
         ", clazz=" + clazz +
         ", action=" + action +
-        ", trackableEntityFields=" + trackableEntityFields +
+        ", entityTrackingFields=" + entityTrackingFields +
         '}';
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof TrackableEntity)) return false;
-    TrackableEntity that = (TrackableEntity) o;
+    if (!(o instanceof EntityTrackingData)) return false;
+    EntityTrackingData that = (EntityTrackingData) o;
     return Objects.equal(this.id, that.id)
         && Objects.equal(this.clazz, that.clazz)
         && action == that.action;

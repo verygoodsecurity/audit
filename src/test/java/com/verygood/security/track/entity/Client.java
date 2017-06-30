@@ -30,7 +30,6 @@ public class Client {
   private Long id;
 
   @Tracked
-  @NotTracked
   private String name;
 
   @OneToMany(mappedBy = "client")

@@ -3,46 +3,45 @@ package com.verygood.security.track.data;
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityTrackingData {
-  private final Serializable id;
-  private final Class clazz;
-  private final Action action;
-  private final Set<EntityTrackingFieldData> entityTrackingFields;
+  private Serializable id;
+  private Class clazz;
+  private Action action;
+  private List<EntityTrackingFieldData> entityTrackingFields = new ArrayList<>();
 
-  public EntityTrackingData(Serializable id, Class clazz, Action action, Set<EntityTrackingFieldData> entityTrackingFields) {
-    this.id = id;
-    this.clazz = clazz;
-    this.action = action;
-    this.entityTrackingFields = entityTrackingFields;
-  }
-
-  public Set<EntityTrackingFieldData> getEntityTrackingFields() {
-    return Collections.unmodifiableSet(entityTrackingFields);
+  public List<EntityTrackingFieldData> getEntityTrackingFields() {
+    return entityTrackingFields;
   }
 
   public Serializable getId() {
     return id;
   }
 
+  public void setId(Serializable id) {
+    this.id = id;
+  }
+
   public Class getClazz() {
     return clazz;
+  }
+
+  public void setClazz(Class clazz) {
+    this.clazz = clazz;
   }
 
   public Action getAction() {
     return action;
   }
 
-  @Override
-  public String toString() {
-    return "EntityTrackingData{" +
-        "id=" + id +
-        ", clazz=" + clazz +
-        ", action=" + action +
-        ", entityTrackingFields=" + entityTrackingFields +
-        '}';
+  public void setAction(Action action) {
+    this.action = action;
+  }
+
+  public void setEntityTrackingFields(List<EntityTrackingFieldData> entityTrackingFields) {
+    this.entityTrackingFields = entityTrackingFields;
   }
 
   @Override
@@ -51,12 +50,11 @@ public class EntityTrackingData {
     if (!(o instanceof EntityTrackingData)) return false;
     EntityTrackingData that = (EntityTrackingData) o;
     return Objects.equal(this.id, that.id)
-        && Objects.equal(this.clazz, that.clazz)
-        && action == that.action;
+        && Objects.equal(this.clazz, that.clazz);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, clazz, action);
+    return Objects.hashCode(id, clazz);
   }
 }

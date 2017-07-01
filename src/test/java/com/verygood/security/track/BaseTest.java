@@ -1,10 +1,9 @@
 package com.verygood.security.track;
 
-import com.verygood.security.track.entity.Account;
-import com.verygood.security.track.entity.Address;
-import com.verygood.security.track.entity.Car;
-import com.verygood.security.track.entity.Client;
-import com.verygood.security.track.interceptor.TestEntityStateEntityTrackingListener;
+import com.verygood.security.track.data.EntityTrackingData;
+import com.verygood.security.track.data.EntityTrackingFieldData;
+import com.verygood.security.track.listener.TestEntityStateEntityTrackingListener;
+import com.verygood.security.track.sqltracker.QueryCountInfoHolder;
 import com.verygood.security.track.sqltracker.SqlCountTrackerDatasource;
 
 import org.h2.jdbcx.JdbcDataSource;
@@ -16,14 +15,20 @@ import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import static java.util.stream.Collectors.toMap;
+
 public abstract class BaseTest {
   private SessionFactory sf;
   private EntityManagerFactory emf;
+
+  protected TestEntityStateEntityTrackingListener entityTrackingListener = new TestEntityStateEntityTrackingListener();
 
   @Before
   public void init() {
@@ -33,9 +38,34 @@ public abstract class BaseTest {
 
   @After
   public void destroy() {
+    clearContext();
     sf.close();
     emf.close();
   }
+
+  protected void clearContext() {
+    QueryCountInfoHolder.clear();
+    entityTrackingListener.clear();
+  }
+
+  protected List<EntityTrackingFieldData> getInsertedFields(Class clazz) {
+    return entityTrackingListener.getInserts().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
+  protected List<EntityTrackingFieldData> getUpdatedFields(Class clazz) {
+    return entityTrackingListener.getUpdates().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
+  protected List<EntityTrackingFieldData> getDeletedFields(Class clazz) {
+    return entityTrackingListener.getDeletes().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
 
   private SessionFactory newSessionFactory() {
     Properties properties = getProperties();
@@ -50,28 +80,13 @@ public abstract class BaseTest {
     );
   }
 
-  private Interceptor interceptor() {
-    EntityTrackingInterceptor interceptor = new EntityTrackingInterceptor();
-    interceptor.setEntityTrackingListener(TestEntityStateEntityTrackingListener.getInstance());
-    return interceptor;
-  }
-
-  private Class<?>[] entities() {
-    return new Class<?>[]{
-        Client.class,
-        Account.class,
-        Address.class,
-        Car.class
-    };
-  }
-
   private Properties getProperties() {
     Properties properties = new Properties();
     properties.put(AvailableSettings.DIALECT, "org.hibernate.dialect.H2Dialect");
     properties.put(AvailableSettings.HBM2DDL_AUTO, "create");
     properties.put(AvailableSettings.DATASOURCE, dataSource());
     properties.put(AvailableSettings.INTERCEPTOR, interceptor());
-    properties.put(AvailableSettings.SHOW_SQL, true);
+    properties.put(AvailableSettings.SHOW_SQL, false);
     properties.put(AvailableSettings.FORMAT_SQL, true);
     return properties;
   }
@@ -91,4 +106,9 @@ public abstract class BaseTest {
   protected EntityManagerFactory entityManagerFactory() {
     return emf;
   }
+
+  protected abstract Interceptor interceptor();
+
+  protected abstract Class<?>[] entities();
+
 }

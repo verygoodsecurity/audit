@@ -3,13 +3,37 @@ package com.verygood.security.track.data;
 import com.google.common.base.Objects;
 
 public class EntityTrackingFieldData {
-  private final String name;
-  private final Object oldValue;
-  private final Object newValue;
+  private String name;
+  private Object oldValue;
+  private Object newValue;
 
   public EntityTrackingFieldData(String name, Object oldValue, Object newValue) {
     this.name = name;
     this.oldValue = oldValue;
+    this.newValue = newValue;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Object getOldValue() {
+    return oldValue;
+  }
+
+  public void setOldValue(Object oldValue) {
+    this.oldValue = oldValue;
+  }
+
+  public Object getNewValue() {
+    return newValue;
+  }
+
+  public void setNewValue(Object newValue) {
     this.newValue = newValue;
   }
 
@@ -24,27 +48,6 @@ public class EntityTrackingFieldData {
   @Override
   public int hashCode() {
     return Objects.hashCode(name);
-  }
-
-  @Override
-  public String toString() {
-    return "EntityTrackingFieldData{" +
-        "name='" + name + '\'' +
-        ", oldValue=" + oldValue +
-        ", newValue=" + newValue +
-        '}';
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public Object getOldValue() {
-    return oldValue;
-  }
-
-  public Object getNewValue() {
-    return newValue;
   }
 
 

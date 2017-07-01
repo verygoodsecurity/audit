@@ -1,4 +1,4 @@
-package com.verygood.security.track;
+package com.verygood.security.track.utils;
 
 import com.google.common.base.Objects;
 
@@ -6,13 +6,13 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Collection;
 
-class Utils {
+public class Utils {
 
   private Utils() {
 
   }
 
-  static boolean areEqualOrCompareEqual(Object oldValue, Object newValue) {
+  public static boolean equalsOrCompareEquals(Object oldValue, Object newValue) {
     return Objects.equal(oldValue, newValue)
         || compareEquals(oldValue, newValue);
   }
@@ -23,7 +23,7 @@ class Utils {
   }
 
   //return true when: first = null, second = empty collection or vice versa
-  static boolean areEqualEmptyCollection(Object first, Object second) {
+  public static boolean areEqualEmptyCollection(Object first, Object second) {
     return (first == null && second instanceof Collection && ((Collection) second).isEmpty())
         || (second == null && first instanceof Collection && ((Collection) first).isEmpty());
   }

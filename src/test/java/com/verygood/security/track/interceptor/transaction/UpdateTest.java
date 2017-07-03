@@ -19,7 +19,6 @@ import javax.persistence.SequenceGenerator;
 import static com.verygood.security.track.sqltracker.AssertSqlCount.assertSqlCount;
 import static com.verygood.security.track.sqltracker.AssertSqlCount.assertUpdateCount;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;
 
 public class UpdateTest extends BaseTransactionTest {
@@ -27,7 +26,7 @@ public class UpdateTest extends BaseTransactionTest {
   @Test
   public void testSingleEntityUpdate() {
     // set up
-    Serializable accountId = doInJPA(this::entityManagerFactory, em -> {
+    Serializable accountId = doInJPA(em -> {
       Account account = new Account();
       account.setFirst("old 1");
       account.setSecond("old 2");
@@ -37,7 +36,7 @@ public class UpdateTest extends BaseTransactionTest {
     });
     clearContext();
 
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Account account = em.find(Account.class, accountId);
       account.setFirst("new 1");
       account.setSecond("new 2");

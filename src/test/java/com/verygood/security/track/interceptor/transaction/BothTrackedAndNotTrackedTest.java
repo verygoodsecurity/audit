@@ -13,13 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
-
 public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
 
   @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotations() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Fruit fruit = new Fruit();
       fruit.setColor("green");
       em.persist(fruit);
@@ -28,7 +26,7 @@ public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
 
   @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotationsAndClassHasTracked() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Fruit fruit = new Fruit();
       fruit.setColor("green");
       em.persist(fruit);

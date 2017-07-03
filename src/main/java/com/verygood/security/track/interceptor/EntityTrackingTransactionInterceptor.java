@@ -4,15 +4,18 @@ import com.verygood.security.track.data.Action;
 import com.verygood.security.track.data.EntityTrackingData;
 import com.verygood.security.track.data.EntityTrackingFieldData;
 import com.verygood.security.track.exception.IllegalTrackingAnnotationsException;
+import com.verygood.security.track.listener.EntityTrackingListener;
 import com.verygood.security.track.meta.NotTracked;
 import com.verygood.security.track.meta.Trackable;
 import com.verygood.security.track.meta.Tracked;
 import com.verygood.security.track.utils.Utils;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -28,8 +31,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 @NotThreadSafe
-public class EntityTrackingTransactionInterceptor extends BaseTrackingInterceptor {
+public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
+  private EntityTrackingListener entityTrackingListener;
   private Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
+
+  private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
 
   @Override
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, org.hibernate.type.Type[] types) {
@@ -158,15 +164,24 @@ public class EntityTrackingTransactionInterceptor extends BaseTrackingIntercepto
 
   @Override
   public void beforeTransactionCompletion(Transaction tx) {
-    if (tx.getStatus() != TransactionStatus.ACTIVE) {
+    if (!tx.isActive()) {
       return;
     }
     try {
       if (!changes.isEmpty()) {
-        changes.values().forEach(entityTrackingListener::onEntityChanged);
+        if (entityTrackingListener != null) {
+          changes.values().forEach(entityTrackingListener::onEntityChanged);
+        } else {
+          LOG.warn("Couldn't track data, EntityTrackingListener is not provided");
+        }
       }
     } finally {
       changes.clear();
     }
+  }
+
+  @Override
+  public void setEntityTrackingListener(EntityTrackingListener entityTrackingListener) {
+    this.entityTrackingListener = entityTrackingListener;
   }
 }

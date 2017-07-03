@@ -14,14 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;
 
 public class NotTrackableTest extends BaseTransactionTest {
 
   @Test
   public void shouldNotTrackEntityIfItDoesNotHaveTrackableAnnotation() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Client client = new Client();
       em.persist(client);
     });

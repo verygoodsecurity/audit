@@ -26,14 +26,13 @@ import javax.persistence.SequenceGenerator;
 import static com.verygood.security.track.sqltracker.AssertSqlCount.assertInsertCount;
 import static com.verygood.security.track.sqltracker.AssertSqlCount.assertSqlCount;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
 import static org.junit.Assert.assertThat;
 
 public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testSingleEntityInsertion() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Account account = new Account();
       account.setAmount(100);
       em.persist(account);
@@ -51,7 +50,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToManyInsertion() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Address address = new Address();
       address.setCity("Seattle");
       address.setStreet("street");
@@ -78,7 +77,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToOneInsertion1() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Address address = new Address();
       Client client = new Client();
 
@@ -103,7 +102,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToOneInsertion2() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Client client = new Client();
       Passport passport = new Passport();
 
@@ -122,13 +121,6 @@ public class InsertTest extends BaseTransactionTest {
 
     assertInsertCount(2);
     assertSqlCount(2);
-  }
-
-  @Override
-  protected Interceptor interceptor() {
-    EntityTrackingTransactionInterceptor interceptor = new EntityTrackingTransactionInterceptor();
-    interceptor.setEntityTrackingListener(entityTrackingListener);
-    return interceptor;
   }
 
   @Override

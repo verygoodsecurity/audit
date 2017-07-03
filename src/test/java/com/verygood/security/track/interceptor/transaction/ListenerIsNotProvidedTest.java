@@ -1,33 +1,45 @@
 package com.verygood.security.track.interceptor.transaction;
 
 import com.verygood.security.track.BaseTest;
-import com.verygood.security.track.exception.IllegalEntityTrackingInterceptorException;
+import com.verygood.security.track.data.EntityTrackingData;
 import com.verygood.security.track.interceptor.EntityTrackingTransactionInterceptor;
 
-import org.hibernate.Interceptor;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-import static org.hibernate.testing.transaction.TransactionUtil.doInJPA;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
+@Ignore
 public class ListenerIsNotProvidedTest extends BaseTest {
 
-  @Test(expected = IllegalEntityTrackingInterceptorException.class)
+  @Test
   public void shouldFailIfListenerIsNotProvided() {
-    doInJPA(this::entityManagerFactory, em -> {
+    doInJPA(em -> {
       Client client = new Client();
       em.persist(client);
+      List<EntityTrackingData> insertedEntities = entityTrackingListener.getInserts();
+      assertThat(insertedEntities.size(), is(0));
     });
   }
 
   @Override
-  protected Interceptor interceptor() {
-    return new EntityTrackingTransactionInterceptor();
+  protected void addListener(EntityManager entityManager) {
+    // NOP
+  }
+
+  @Override
+  protected String interceptor() {
+    return EntityTrackingTransactionInterceptor.class.getName();
   }
 
   @Override

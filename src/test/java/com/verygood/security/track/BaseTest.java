@@ -124,7 +124,12 @@ public abstract class BaseTest {
 
   protected abstract Class<?>[] entities();
 
-  protected <T> T doInJPA(Function<EntityManager, T> function) {
+  protected void addListener(EntityManager entityManager) {
+    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) entityManager.getDelegate()).getInterceptor();
+    interceptor.setEntityTrackingListener(entityTrackingListener);
+  }
+
+  protected <T> T doInJpa(Function<EntityManager, T> function) {
     T result;
     EntityManager entityManager = null;
     EntityTransaction txn = null;
@@ -146,12 +151,7 @@ public abstract class BaseTest {
     return result;
   }
 
-  protected void addListener(EntityManager entityManager) {
-    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) entityManager.getDelegate()).getInterceptor();
-    interceptor.setEntityTrackingListener(entityTrackingListener);
-  }
-
-  protected void doInJPA(Consumer<EntityManager> function) {
+  protected void doInJpa(Consumer<EntityManager> function) {
     EntityManager entityManager = null;
     EntityTransaction txn = null;
     try {

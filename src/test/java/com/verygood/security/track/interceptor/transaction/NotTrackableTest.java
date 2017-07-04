@@ -20,7 +20,7 @@ public class NotTrackableTest extends BaseTransactionTest {
 
   @Test
   public void shouldNotTrackEntityIfItDoesNotHaveTrackableAnnotation() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Client client = new Client();
       em.persist(client);
     });
@@ -39,8 +39,7 @@ public class NotTrackableTest extends BaseTransactionTest {
   @Entity
   private static class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
-    @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
+    @GeneratedValue
     private Long id;
 
     @Tracked

@@ -2,11 +2,9 @@ package com.verygood.security.track.interceptor.transaction;
 
 import com.verygood.security.track.data.EntityTrackingData;
 import com.verygood.security.track.data.EntityTrackingFieldData;
-import com.verygood.security.track.interceptor.EntityTrackingTransactionInterceptor;
 import com.verygood.security.track.meta.Trackable;
 import com.verygood.security.track.meta.Tracked;
 
-import org.hibernate.Interceptor;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testSingleEntityInsertion() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Account account = new Account();
       account.setAmount(100);
       em.persist(account);
@@ -50,7 +48,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToManyInsertion() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Address address = new Address();
       address.setCity("Seattle");
       address.setStreet("street");
@@ -77,7 +75,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToOneInsertion1() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Address address = new Address();
       Client client = new Client();
 
@@ -102,7 +100,7 @@ public class InsertTest extends BaseTransactionTest {
 
   @Test
   public void testOneToOneInsertion2() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Client client = new Client();
       Passport passport = new Passport();
 

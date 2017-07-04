@@ -7,6 +7,7 @@ import com.verygood.security.track.meta.Tracked;
 
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -20,8 +21,8 @@ import static org.junit.Assert.assertThat;
 
 public class NotTrackedFieldTest extends BaseTransactionTest {
   @Test
-  public void shouldNotTrackEntityIfItDoesNotHaveTrackableAnnotation() {
-    doInJPA(em -> {
+  public void shouldNotTrackEntityFieldIfItDoesNotHaveTrackedAnnotation() {
+    doInJpa(em -> {
       Client client = new Client();
       client.setName("name");
       client.setAge(27);
@@ -32,13 +33,38 @@ public class NotTrackedFieldTest extends BaseTransactionTest {
     assertThat(inserts.size(), is(1));
   }
 
+  @Test
+  public void shouldNotTrackEntityFieldsIfTheyDontHaveTrackedAnnotation() {
+    doInJpa(em -> {
+      Account account = new Account();
+      account.setAmount(300);
+      em.persist(account);
+
+      List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
+      assertThat(inserts.size(), is(0));
+    });
+  }
+
+  @Test
+  public void shouldNotTrackIfFieldsHaveNotTrackedAnnotation() {
+    doInJpa(em -> {
+      Passport passport = new Passport();
+      passport.setNumber("123");
+      passport.setCreatedDate(new Date());
+      passport.setOwner("John");
+      em.persist(passport);
+
+      List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
+      assertThat(inserts.size(), is(0));
+    });
+  }
+
   @Entity
   @Trackable
   @Tracked
   private static class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
-    @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
+    @GeneratedValue
     private Long id;
 
     private String name;
@@ -66,7 +92,83 @@ public class NotTrackedFieldTest extends BaseTransactionTest {
   @Override
   protected Class<?>[] entities() {
     return new Class<?>[]{
-        Client.class
+        Client.class,
+        Account.class,
+        Passport.class
     };
+  }
+
+  @Entity
+  @Trackable
+  private static class Account {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private int amount;
+
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    public int getAmount() {
+      return amount;
+    }
+
+    public void setAmount(int amount) {
+      this.amount = amount;
+    }
+  }
+
+  @Entity
+  @Trackable
+  @Tracked
+  private static class Passport {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @NotTracked
+    private String number;
+    @NotTracked
+    private String owner;
+    @NotTracked
+    private Date createdDate;
+
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    public String getNumber() {
+      return number;
+    }
+
+    public void setNumber(String number) {
+      this.number = number;
+    }
+
+    public String getOwner() {
+      return owner;
+    }
+
+    public void setOwner(String owner) {
+      this.owner = owner;
+    }
+
+    public Date getCreatedDate() {
+      return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+      this.createdDate = createdDate;
+    }
   }
 }

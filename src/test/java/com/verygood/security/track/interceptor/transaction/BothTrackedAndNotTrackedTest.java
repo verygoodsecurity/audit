@@ -17,7 +17,7 @@ public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
 
   @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotations() {
-    doInJPA(em -> {
+    doInJpa(em -> {
       Fruit fruit = new Fruit();
       fruit.setColor("green");
       em.persist(fruit);
@@ -26,17 +26,18 @@ public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
 
   @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotationsAndClassHasTracked() {
-    doInJPA(em -> {
-      Fruit fruit = new Fruit();
-      fruit.setColor("green");
-      em.persist(fruit);
+    doInJpa(em -> {
+      Shop shop = new Shop();
+      shop.setName("macys");
+      em.persist(shop);
     });
   }
 
   @Override
   protected Class<?>[] entities() {
     return new Class<?>[]{
-        Fruit.class
+        Fruit.class,
+        Shop.class
     };
   }
 
@@ -44,8 +45,7 @@ public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
   @Trackable
   private static class Fruit {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fruit_seq")
-    @SequenceGenerator(name = "fruit_seq", sequenceName = "fruit_seq")
+    @GeneratedValue
     private Long id;
 
     @Tracked
@@ -74,8 +74,7 @@ public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
   @Tracked
   private static class Shop {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shop_seq")
-    @SequenceGenerator(name = "shop_seq", sequenceName = "shop_seq")
+    @GeneratedValue
     private Long id;
 
     @Tracked

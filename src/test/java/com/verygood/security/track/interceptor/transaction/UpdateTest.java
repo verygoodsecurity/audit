@@ -26,7 +26,7 @@ public class UpdateTest extends BaseTransactionTest {
   @Test
   public void testSingleEntityUpdate() {
     // set up
-    Serializable accountId = doInJPA(em -> {
+    Serializable accountId = doInJpa(em -> {
       Account account = new Account();
       account.setFirst("old 1");
       account.setSecond("old 2");
@@ -36,7 +36,7 @@ public class UpdateTest extends BaseTransactionTest {
     });
     clearContext();
 
-    doInJPA(em -> {
+    doInJpa(em -> {
       Account account = em.find(Account.class, accountId);
       account.setFirst("new 1");
       account.setSecond("new 2");

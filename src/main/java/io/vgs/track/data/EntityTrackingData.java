@@ -57,4 +57,14 @@ public class EntityTrackingData {
   public int hashCode() {
     return Objects.hashCode(id, clazz);
   }
+
+  @Override
+  public String toString() {
+    return "EntityTrackingData{" +
+        "id=" + id +
+        ", clazz=" + clazz +
+        ", action=" + action +
+        ", entityTrackingFields=" + entityTrackingFields +
+        '}';
+  }
 }

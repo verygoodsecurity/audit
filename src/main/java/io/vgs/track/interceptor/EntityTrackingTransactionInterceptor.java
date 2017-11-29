@@ -1,5 +1,30 @@
 package io.vgs.track.interceptor;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.Hibernate;
+import org.hibernate.Transaction;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+
 import io.vgs.track.data.Action;
 import io.vgs.track.data.EntityTrackingData;
 import io.vgs.track.data.EntityTrackingFieldData;
@@ -10,53 +35,36 @@ import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
 import io.vgs.track.utils.Utils;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.Transaction;
-import org.hibernate.proxy.HibernateProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.PrimaryKeyJoinColumn;
+import static java.util.stream.Collectors.toList;
 
 @NotThreadSafe
 public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
+  private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
+
   private EntityTrackingListener entityTrackingListener;
   private Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
 
-  private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
-
   @Override
-  public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, org.hibernate.type.Type[] types) {
+  public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
     super.onSave(entity, id, state, propertyNames, types);
     createTrackableEntity(id, entity, new Object[]{}, state, propertyNames, Action.CREATED);
     return false;
   }
 
   @Override
-  public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, org.hibernate.type.Type[] types) {
+  public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
     super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
     createTrackableEntity(id, entity, previousState, currentState, propertyNames, Action.UPDATED);
     return false;
   }
 
   @Override
-  public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, org.hibernate.type.Type[] types) {
+  public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
     super.onDelete(entity, id, state, propertyNames, types);
     createTrackableEntity(id, entity, state, new Object[]{}, propertyNames, Action.DELETED);
   }
 
+  // TODO: make refactoring, cognitive complexity is high
   private void createTrackableEntity(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
     if (!entity.getClass().isAnnotationPresent(Trackable.class)) {
       return;
@@ -66,7 +74,6 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     entityData.setClazz(entity.getClass());
     entityData.setAction(action);
 
-    //  -----
     boolean areTrackedAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
       boolean isTrackedField = field.isAnnotationPresent(Tracked.class);
@@ -83,22 +90,41 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
             Object newValue = currentState.length > 0 ? currentState[i] : null;
 
             if (oldValue instanceof Collection || newValue instanceof Collection) {
-              // TODO implement @ElementCollection
-              continue;
-            }
+              if (Hibernate.isInitialized(oldValue) && field.isAnnotationPresent(ManyToMany.class)) {
+                //noinspection unchecked
+                Collection oldIds = oldValue == null ? Collections.emptyList() :
+                    (Collection) ((Collection) oldValue).stream()
+                        .map(this::retrieveId)
+                        .filter(Objects::nonNull)
+                        .collect(toList());
 
-            if (isEntity(oldValue)) {
-              if (!tableContainsColumn(field)) {
+                //noinspection unchecked
+                Collection newIds = newValue == null ? Collections.emptyList() :
+                    (Collection) ((Collection) newValue).stream()
+                        .map(this::retrieveId)
+                        .filter(Objects::nonNull)
+                        .collect(toList());
+
+                oldValue = oldIds;
+                newValue = newIds;
+              } else {
+                // TODO implement for @ElementCollection
                 continue;
               }
-              oldValue = retrieveId(oldValue);
-            }
-
-            if (isEntity(newValue)) {
-              if (!tableContainsColumn(field)) {
-                continue;
+            } else {
+              if (isEntity(oldValue)) {
+                if (!tableContainsColumn(field)) {
+                  continue;
+                }
+                oldValue = retrieveId(oldValue);
               }
-              newValue = retrieveId(newValue);
+
+              if (isEntity(newValue)) {
+                if (!tableContainsColumn(field)) {
+                  continue;
+                }
+                newValue = retrieveId(newValue);
+              }
             }
 
             boolean equal = Utils.equalsOrCompareEquals(oldValue, newValue);
@@ -111,7 +137,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
             EntityTrackingData entityTrackingData = changes.get(entityData);
             if (entityTrackingData != null) {
               List<EntityTrackingFieldData> trackingFields = entityTrackingData.getEntityTrackingFields();
-              // if new field already exists then just refresh its value, otherwise add a new field
+              // if new field already exists then just refresh its value, otherwise add a new one
               int indexOfExistentField = trackingFields.indexOf(fieldData);
               if (indexOfExistentField >= 0) {
                 EntityTrackingFieldData currentField = trackingFields.get(indexOfExistentField);

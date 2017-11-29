@@ -50,5 +50,12 @@ public class EntityTrackingFieldData {
     return Objects.hashCode(name);
   }
 
-
+  @Override
+  public String toString() {
+    return "EntityTrackingFieldData{" +
+        "name='" + name + '\'' +
+        ", oldValue=" + oldValue +
+        ", newValue=" + newValue +
+        '}';
+  }
 }

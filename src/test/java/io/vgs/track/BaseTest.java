@@ -99,7 +99,7 @@ public abstract class BaseTest {
     properties.put(AvailableSettings.HBM2DDL_AUTO, "create");
     properties.put(AvailableSettings.DATASOURCE, dataSource());
     properties.put(org.hibernate.jpa.AvailableSettings.SESSION_INTERCEPTOR, interceptor());
-    properties.put(AvailableSettings.SHOW_SQL, false);
+    properties.put(AvailableSettings.SHOW_SQL, true);
     properties.put(AvailableSettings.FORMAT_SQL, true);
     return properties;
   }

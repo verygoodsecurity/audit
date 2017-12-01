@@ -1,12 +1,17 @@
 package io.vgs.track.listener;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
 import io.vgs.track.data.Action;
 import io.vgs.track.data.EntityTrackingData;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.vgs.track.data.EntityTrackingFieldData;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class TestEntityStateEntityTrackingListener implements EntityTrackingListener {
 
@@ -29,6 +34,45 @@ public class TestEntityStateEntityTrackingListener implements EntityTrackingList
         .filter(entity -> entity.getAction() == Action.DELETED)
         .collect(toList());
   }
+
+  public EntityTrackingFieldData getInsertedField(String fieldName) {
+    return getField(getInserts(), fieldName);
+  }
+
+  public EntityTrackingFieldData getUpdatedField(String fieldName) {
+    return getField(getUpdates(), fieldName);
+  }
+
+  public EntityTrackingFieldData getDeletedField(String fieldName) {
+    return getField(getDeletes(), fieldName);
+  }
+
+  private EntityTrackingFieldData getField(List<EntityTrackingData> data, String fieldName) {
+    return data.stream()
+        .map(EntityTrackingData::getEntityTrackingFields)
+        .flatMap(Collection::stream)
+        .collect(toMap(EntityTrackingFieldData::getName, Function.identity(), (k1, k2) -> k1))
+        .get(fieldName);
+  }
+
+  public List<EntityTrackingFieldData> getInsertedFields(Class clazz) {
+    return getInserts().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
+  public List<EntityTrackingFieldData> getUpdatedFields(Class clazz) {
+    return getUpdates().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
+  public List<EntityTrackingFieldData> getDeletedFields(Class clazz) {
+    return getDeletes().stream()
+        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
+        .getOrDefault(clazz, Collections.emptyList());
+  }
+
 
   public void clear() {
     changes.clear();

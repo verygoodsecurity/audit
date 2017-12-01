@@ -1,8 +1,5 @@
 package io.vgs.track.interceptor.transaction;
 
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.meta.Tracked;
-
 import org.junit.Test;
 
 import java.util.List;
@@ -11,10 +8,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.meta.Tracked;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class NotTrackableTest extends BaseTransactionTest {
+public class NotTrackableTest extends BaseTest {
 
   @Test
   public void shouldNotTrackEntityIfItDoesNotHaveTrackableAnnotation() {
@@ -23,7 +24,7 @@ public class NotTrackableTest extends BaseTransactionTest {
       em.persist(client);
     });
 
-    List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
+    List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
     assertThat(inserts.size(), is(0));
   }
 

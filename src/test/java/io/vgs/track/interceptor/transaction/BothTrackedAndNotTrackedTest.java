@@ -1,17 +1,18 @@
 package io.vgs.track.interceptor.transaction;
 
-import io.vgs.track.exception.IllegalTrackingAnnotationsException;
-import io.vgs.track.meta.NotTracked;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
 import org.junit.Test;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-public class BothTrackedAndNotTrackedTest extends BaseTransactionTest {
+import io.vgs.track.BaseTest;
+import io.vgs.track.exception.IllegalTrackingAnnotationsException;
+import io.vgs.track.meta.NotTracked;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
+public class BothTrackedAndNotTrackedTest extends BaseTest {
 
   @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotations() {

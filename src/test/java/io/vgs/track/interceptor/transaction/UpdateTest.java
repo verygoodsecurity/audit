@@ -1,10 +1,5 @@
 package io.vgs.track.interceptor.transaction;
 
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -16,12 +11,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
 import io.vgs.track.sqltracker.AssertSqlCount;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UpdateTest extends BaseTransactionTest {
+public class UpdateTest extends BaseTest {
 
   @Test
   public void testSingleEntityUpdate() {
@@ -44,10 +44,10 @@ public class UpdateTest extends BaseTransactionTest {
       em.persist(account);
     });
 
-    List<EntityTrackingData> updatedEntities = entityTrackingListener.getUpdates();
+    List<EntityTrackingData> updatedEntities = testEntityTrackingListener.getUpdates();
     assertThat(updatedEntities.size(), is(1));
 
-    List<EntityTrackingFieldData> updatedFields = getUpdatedFields(Account.class);
+    List<EntityTrackingFieldData> updatedFields = testEntityTrackingListener.getUpdatedFields(Account.class);
     assertThat(updatedFields.size(), is(3));
 
     AssertSqlCount.assertUpdateCount(1);

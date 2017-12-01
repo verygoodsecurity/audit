@@ -1,9 +1,5 @@
 package io.vgs.track.interceptor.transaction;
 
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.interceptor.EntityTrackingTransactionInterceptor;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,6 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.interceptor.EntityTrackingTransactionInterceptor;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,7 +25,7 @@ public class ListenerIsNotProvidedTest extends BaseTest {
     doInJpa(em -> {
       Client client = new Client();
       em.persist(client);
-      List<EntityTrackingData> insertedEntities = entityTrackingListener.getInserts();
+      List<EntityTrackingData> insertedEntities = testEntityTrackingListener.getInserts();
       assertThat(insertedEntities.size(), is(0));
     });
   }

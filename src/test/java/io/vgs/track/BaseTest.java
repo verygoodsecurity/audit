@@ -1,13 +1,7 @@
 package io.vgs.track;
 
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.interceptor.EntityTrackingListenerAware;
-import io.vgs.track.listener.TestEntityStateEntityTrackingListener;
-import io.vgs.track.sqltracker.QueryCountInfoHolder;
-import io.vgs.track.sqltracker.SqlCountTrackerDatasource;
-
 import org.h2.jdbcx.JdbcDataSource;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
@@ -17,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,13 +21,17 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
-import static java.util.stream.Collectors.toMap;
+import io.vgs.track.interceptor.EntityTrackingListenerAware;
+import io.vgs.track.interceptor.EntityTrackingTransactionInterceptor;
+import io.vgs.track.listener.TestEntityStateEntityTrackingListener;
+import io.vgs.track.sqltracker.QueryCountInfoHolder;
+import io.vgs.track.sqltracker.SqlCountTrackerDatasource;
 
 public abstract class BaseTest {
   private SessionFactory sf;
   private EntityManagerFactory emf;
 
-  protected TestEntityStateEntityTrackingListener entityTrackingListener = new TestEntityStateEntityTrackingListener();
+  protected TestEntityStateEntityTrackingListener testEntityTrackingListener = new TestEntityStateEntityTrackingListener();
 
   @Before
   public void init() {
@@ -52,27 +48,8 @@ public abstract class BaseTest {
 
   protected void clearContext() {
     QueryCountInfoHolder.clear();
-    entityTrackingListener.clear();
+    testEntityTrackingListener.clear();
   }
-
-  protected List<EntityTrackingFieldData> getInsertedFields(Class clazz) {
-    return entityTrackingListener.getInserts().stream()
-        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
-        .getOrDefault(clazz, Collections.emptyList());
-  }
-
-  protected List<EntityTrackingFieldData> getUpdatedFields(Class clazz) {
-    return entityTrackingListener.getUpdates().stream()
-        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
-        .getOrDefault(clazz, Collections.emptyList());
-  }
-
-  protected List<EntityTrackingFieldData> getDeletedFields(Class clazz) {
-    return entityTrackingListener.getDeletes().stream()
-        .collect(toMap(EntityTrackingData::getClazz, EntityTrackingData::getEntityTrackingFields))
-        .getOrDefault(clazz, Collections.emptyList());
-  }
-
 
   private SessionFactory newSessionFactory() {
     Properties properties = getProperties();
@@ -120,13 +97,15 @@ public abstract class BaseTest {
     return emf;
   }
 
-  protected abstract String interceptor();
-
+  protected String interceptor() {
+    return EntityTrackingTransactionInterceptor.class.getName();
+  }
   protected abstract Class<?>[] entities();
 
   protected void addListener(EntityManager entityManager) {
-    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) entityManager.getDelegate()).getInterceptor();
-    interceptor.setEntityTrackingListener(entityTrackingListener);
+    Session session = (Session) entityManager.getDelegate();
+    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) session).getInterceptor();
+    interceptor.setEntityTrackingListener(testEntityTrackingListener);
   }
 
   protected <T> T doInJpa(Function<EntityManager, T> function) {

@@ -45,6 +45,7 @@ import static java.util.stream.Collectors.toList;
 public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
   private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
   private static final String TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG = "The field %s should have either @Tracked or @NotTracked annotation";
+  public static final String PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET = "PersistentMap tracking is not supported yet";
 
   private EntityTrackingListener entityTrackingListener;
   private Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
@@ -76,6 +77,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     // do not touch lazy collections, like PersistentBag
     // for performance sake entity.getPersistentBag().add(element) does not trigger sql select to fetch entire collection
     if (!Hibernate.isInitialized(collection)) {
+      LOG.debug("Couldn't track lazy collection");
       return;
     }
     if (!(collection instanceof AbstractPersistentCollection)) {
@@ -83,6 +85,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     }
     // not implemented yet
     if (collection instanceof PersistentMap) {
+      LOG.warn(PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET);
       return;
     }
 
@@ -124,6 +127,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     }
     // not implemented yet
     if (collection instanceof PersistentMap) {
+      LOG.warn(PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET);
       return;
     }
 

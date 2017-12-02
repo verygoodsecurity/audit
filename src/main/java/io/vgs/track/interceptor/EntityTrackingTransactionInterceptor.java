@@ -17,13 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -46,6 +44,7 @@ import static java.util.stream.Collectors.toList;
 @NotThreadSafe
 public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
   private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
+  private static final String TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG = "The field %s should have either @Tracked or @NotTracked annotation";
 
   private EntityTrackingListener entityTrackingListener;
   private Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
@@ -53,36 +52,35 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   @Override
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
     super.onSave(entity, id, state, propertyNames, types);
-    createTrackableEntity(id, entity, new Object[]{}, state, propertyNames, Action.CREATED);
+    createEntityTrackingData(id, entity, new Object[]{}, state, propertyNames, Action.CREATED);
     return false;
   }
 
   @Override
   public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
     super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
-    createTrackableEntity(id, entity, previousState, currentState, propertyNames, Action.UPDATED);
+    createEntityTrackingData(id, entity, previousState, currentState, propertyNames, Action.UPDATED);
     return false;
   }
 
   @Override
   public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
     super.onDelete(entity, id, state, propertyNames, types);
-    createTrackableEntity(id, entity, state, new Object[]{}, propertyNames, Action.DELETED);
+    createEntityTrackingData(id, entity, state, new Object[]{}, propertyNames, Action.DELETED);
   }
 
   @Override
   public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
     super.onCollectionUpdate(collection, key);
 
-    // bag is not loaded, performance optimization
+    // do not touch lazy collections, like PersistentBag
+    // for performance sake entity.getPersistentBag().add(element) does not trigger sql select to fetch entire collection
     if (!Hibernate.isInitialized(collection)) {
       return;
     }
-
     if (!(collection instanceof AbstractPersistentCollection)) {
       return;
     }
-
     // not implemented yet
     if (collection instanceof PersistentMap) {
       return;
@@ -94,36 +92,19 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
       return;
     }
 
-
     String collectionFieldName = getFieldNameFromRole(owner, newValues.getRole());
     Field collectionField = FieldUtils.getDeclaredField(owner.getClass(), collectionFieldName, true);
-    if (!collectionField.isAnnotationPresent(Tracked.class) && !owner.getClass().isAnnotationPresent(Tracked.class)) {
-      return;
-    }
-
     boolean areTrackedAllFields = owner.getClass().isAnnotationPresent(Tracked.class);
-    boolean isTrackedField = collectionField.isAnnotationPresent(Tracked.class);
-    boolean isNotTrackedField = collectionField.isAnnotationPresent(NotTracked.class);
-
-    if (isTrackedField && isNotTrackedField) {
-      throw new IllegalTrackingAnnotationsException("The field " + collectionField.getName() + " should have either @Tracked or @NotTracked annotation");
-    }
-
-    if (!((isTrackedField && !isNotTrackedField) || (!isTrackedField && areTrackedAllFields && !isNotTrackedField))) {
+    if (!validateAnnotations(areTrackedAllFields, collectionField)) {
       return;
     }
 
     Collection<?> oldCollection = (newValues instanceof PersistentSet) ? ((Map<?, ?>) newValues.getStoredSnapshot()).keySet() : (Collection) newValues.getStoredSnapshot();
     Collection<?> newCollection = (Collection) collection;
 
-
-    boolean isCollectionOfEntities = collectionField.isAnnotationPresent(ManyToMany.class) || collectionField.isAnnotationPresent(OneToMany.class);
-
-    oldCollection = oldCollection == null ? Collections.emptyList() : oldCollection;
-    newCollection = newCollection == null ? Collections.emptyList() : newCollection;
-
-    Object oldValue = isCollectionOfEntities ? oldCollection.stream().map(this::retrieveId).collect(toList()) : oldCollection;
-    Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveId).collect(toList()) : newCollection;
+    boolean isCollectionOfEntities = isCollectionOfEntities(collectionField);
+    Object oldValue = isCollectionOfEntities ? oldCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : oldCollection;
+    Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
 
     EntityTrackingData entityData = new EntityTrackingData();
     entityData.setId(key);
@@ -141,7 +122,6 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     if (!(collection instanceof AbstractPersistentCollection)) {
       return;
     }
-
     // not implemented yet
     if (collection instanceof PersistentMap) {
       return;
@@ -159,28 +139,16 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     String collectionFieldName = getFieldNameFromRole(owner, collectionRole);
 
     Field collectionField = FieldUtils.getDeclaredField(owner.getClass(), collectionFieldName, true);
-    boolean isCollectionOfEntities = collectionField.isAnnotationPresent(ManyToMany.class) || collectionField.isAnnotationPresent(OneToMany.class);
-
-    if (!collectionField.isAnnotationPresent(Tracked.class) && !owner.getClass().isAnnotationPresent(Tracked.class)) {
-      return;
-    }
-
     boolean areTrackedAllFields = owner.getClass().isAnnotationPresent(Tracked.class);
-    boolean isTrackedField = collectionField.isAnnotationPresent(Tracked.class);
-    boolean isNotTrackedField = collectionField.isAnnotationPresent(NotTracked.class);
-
-    if (isTrackedField && isNotTrackedField) {
-      throw new IllegalTrackingAnnotationsException("The field " + collectionField.getName() + " should have either @Tracked or @NotTracked annotation");
-    }
-
-    if (!((isTrackedField && !isNotTrackedField) || (!isTrackedField && areTrackedAllFields && !isNotTrackedField))) {
+    if (!validateAnnotations(areTrackedAllFields, collectionField)) {
       return;
     }
 
     Collection<?> newCollection = (Collection) collection;
 
+    boolean isCollectionOfEntities = isCollectionOfEntities(collectionField);
     Object oldValue = getFieldDefaultValue(owner.getClass(), collectionFieldName);
-    Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveId).collect(toList()) : newCollection;
+    Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
 
     EntityTrackingData entityData = new EntityTrackingData();
     entityData.setId(key);
@@ -201,8 +169,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     }
   }
 
-  // TODO: make refactoring, cognitive complexity is high
-  private void createTrackableEntity(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
+  private void createEntityTrackingData(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
     if (!entity.getClass().isAnnotationPresent(Trackable.class)) {
       return;
     }
@@ -213,53 +180,51 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
 
     boolean areTrackedAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
-      boolean isTrackedField = field.isAnnotationPresent(Tracked.class);
-      boolean isNotTrackedField = field.isAnnotationPresent(NotTracked.class);
-
-      if (isTrackedField && isNotTrackedField) {
-        throw new IllegalTrackingAnnotationsException("The field " + field.getName() + " should have either @Tracked or @NotTracked annotation");
+      if (validateAnnotations(areTrackedAllFields, field)) {
+        createEntityTrackingFieldData(previousState, currentState, propertyNames, entityData, field);
       }
+    }
+  }
 
-      if (!((isTrackedField && !isNotTrackedField) || (!isTrackedField && areTrackedAllFields && !isNotTrackedField))) {
-        continue;
-      }
+  private boolean validateAnnotations(boolean areTrackedAllFields, Field field) {
+    boolean isTrackedField = field.isAnnotationPresent(Tracked.class);
+    boolean isNotTrackedField = field.isAnnotationPresent(NotTracked.class);
 
-      for (int i = 0; i < propertyNames.length; i++) {
-        if (propertyNames[i].equals(field.getName())) {
-          Object oldValue = previousState.length > 0 ? previousState[i] : null;
-          Object newValue = currentState.length > 0 ? currentState[i] : null;
+    if (isTrackedField && isNotTrackedField) {
+      throw new IllegalTrackingAnnotationsException(String.format(TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG, field.getName()));
+    }
+    return (isTrackedField && !isNotTrackedField) || (!isTrackedField && areTrackedAllFields && !isNotTrackedField);
+  }
 
-          if (oldValue instanceof Collection
-              || newValue instanceof Collection) {
-            // implemented in onCollectionCreate and onCollectionUpdate
-            continue;
-          }
+  private void createEntityTrackingFieldData(Object[] previousState, Object[] currentState, String[] propertyNames, EntityTrackingData entityData, Field field) {
+    for (int i = 0; i < propertyNames.length; i++) {
+      if (propertyNames[i].equals(field.getName())) {
+        Object oldValue = previousState.length > 0 ? previousState[i] : null;
+        Object newValue = currentState.length > 0 ? currentState[i] : null;
 
-          if (isEntity(oldValue)) {
-            if (!tableContainsColumn(field)) {
-              continue;
-            }
-            oldValue = retrieveId(oldValue);
-          }
+        if (isCollectionOfEntities(field)) {
+          return;
+        }
+        boolean isOldValueEntity = isEntity(oldValue);
+        boolean isNewValueEntity = isEntity(newValue);
 
-          if (isEntity(newValue)) {
-            if (!tableContainsColumn(field)) {
-              continue;
-            }
-            newValue = retrieveId(newValue);
-          }
+        if ((isOldValueEntity && !isOwnerSide(field)) || (isNewValueEntity && !isOwnerSide(field))) {
+          return;
+        }
 
-          boolean equal = Utils.equalsOrCompareEquals(oldValue, newValue);
+        oldValue = isOldValueEntity ? retrieveIdFromEntity(oldValue) : oldValue;
+        newValue = isNewValueEntity ? retrieveIdFromEntity(newValue) : newValue;
 
-          if (equal) {
-            continue;
-          }
-
-          EntityTrackingFieldData fieldData = new EntityTrackingFieldData(field.getName(), oldValue, newValue);
-          addOrUpdateFieldData(entityData, fieldData, newValue);
+        if (!Utils.equalsOrCompareEquals(oldValue, newValue)) {
+          addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), oldValue, newValue), newValue);
         }
       }
     }
+  }
+
+  // implemented in onCollectionCreate and onCollectionUpdate
+  private boolean isCollectionOfEntities(Field field) {
+    return field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToMany.class);
   }
 
   private void addOrUpdateFieldData(EntityTrackingData entityData, EntityTrackingFieldData fieldData, Object newValue) {
@@ -280,21 +245,19 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     }
   }
 
-
   private String getFieldNameFromRole(Object owner, String collectionRole) {
     return collectionRole.replace(owner.getClass().getName() + ".", "");
   }
 
-  private boolean tableContainsColumn(Field field) {
-    return field.isAnnotationPresent(JoinColumn.class)
-        || field.isAnnotationPresent(PrimaryKeyJoinColumn.class);
+  private boolean isOwnerSide(Field field) {
+    return field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(PrimaryKeyJoinColumn.class);
   }
 
   private boolean isEntity(Object value) {
     return value != null && value.getClass().isAnnotationPresent(Entity.class);
   }
 
-  private Object retrieveId(Object entity) {
+  private Object retrieveIdFromEntity(Object entity) {
     if (entity instanceof HibernateProxy) {
       return ((HibernateProxy) entity).getHibernateLazyInitializer().getIdentifier();
     }

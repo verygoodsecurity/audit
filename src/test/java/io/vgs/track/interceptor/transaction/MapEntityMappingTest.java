@@ -1,7 +1,5 @@
 package io.vgs.track.interceptor.transaction;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -24,14 +22,13 @@ import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MapEntityMappingTest extends BaseTest {
 
   @Test
-  public void mapNotSupported() {
+  public void mapOfEntities() {
     Map<String, Car> cars = new HashMap<>();
 
     doInJpa(em -> {
@@ -52,8 +49,7 @@ public class MapEntityMappingTest extends BaseTest {
     });
 
     EntityTrackingFieldData carMapField = testEntityTrackingListener.getInsertedField("carMap");
-    assertThat(carMapField, is(notNullValue()));
-    assertThat(carMapField.getNewValue(), is(cars));
+    assertThat(carMapField, is(nullValue()));
   }
 
   @Entity

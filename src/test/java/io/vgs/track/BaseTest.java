@@ -1,5 +1,7 @@
 package io.vgs.track;
 
+import com.p6spy.engine.spy.P6DataSource;
+
 import org.h2.jdbcx.JdbcDataSource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -76,13 +78,17 @@ public abstract class BaseTest {
     properties.put(AvailableSettings.HBM2DDL_AUTO, "create");
     properties.put(AvailableSettings.DATASOURCE, dataSource());
     properties.put(org.hibernate.jpa.AvailableSettings.SESSION_INTERCEPTOR, interceptor());
-    properties.put(AvailableSettings.SHOW_SQL, true);
+    properties.put(AvailableSettings.SHOW_SQL, false);
     properties.put(AvailableSettings.FORMAT_SQL, true);
     return properties;
   }
 
   private DataSource dataSource() {
-    return new SqlCountTrackerDatasource(realDataSource());
+    return new SqlCountTrackerDatasource(
+        new P6DataSource(
+            realDataSource()
+        )
+    );
   }
 
   private DataSource realDataSource() {
@@ -100,6 +106,7 @@ public abstract class BaseTest {
   protected String interceptor() {
     return EntityTrackingTransactionInterceptor.class.getName();
   }
+
   protected abstract Class<?>[] entities();
 
   protected void addListener(EntityManager entityManager) {

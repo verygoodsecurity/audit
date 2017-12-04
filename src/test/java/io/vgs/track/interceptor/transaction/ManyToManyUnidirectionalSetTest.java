@@ -10,12 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 
@@ -26,10 +23,13 @@ import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 @SuppressWarnings("Duplicates")
-public class BidirectionalManyToManySetTest extends BaseTest {
+public class ManyToManyUnidirectionalSetTest extends BaseTest {
 
   @Test
   public void simpleSynchronization() {
@@ -38,12 +38,18 @@ public class BidirectionalManyToManySetTest extends BaseTest {
       Project project = new Project();
 
       employee.getProjects().add(project);
-      project.getEmployees().add(employee);
 
       em.persist(project);
       em.persist(employee);
     });
-    assertThat(testEntityTrackingListener.getInserts().size(), is(2));
+
+    List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
+    assertThat(inserts.size(), is(1));
+    EntityTrackingFieldData projects = testEntityTrackingListener.getInsertedField("projects");
+    assertThat(projects.getOldValue(), is(nullValue()));
+    Collection<?> actualProjectsNewValue = (Collection) projects.getNewValue();
+    assertThat(actualProjectsNewValue, hasSize(1));
+    assertThat(actualProjectsNewValue, containsInAnyOrder(50L));
   }
 
   @Test
@@ -51,23 +57,34 @@ public class BidirectionalManyToManySetTest extends BaseTest {
     Long employeeId = doInJpa(em -> {
       Employee employee = new Employee();
       Project project = new Project();
+      project.setName("old project");
       employee.getProjects().add(project);
-      project.getEmployees().add(employee);
       em.persist(project);
       em.persist(employee);
       return employee.getId();
     });
-
-    System.out.println(testEntityTrackingListener.getInserts());
     clearContext();
 
     doInJpa(em -> {
       Employee employee = em.find(Employee.class, employeeId);
       Project newProject = new Project();
+      newProject.setName("new project");
       employee.getProjects().add(newProject);
-      newProject.getEmployees().add(employee);
       em.persist(newProject);
     });
+
+    List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
+    assertThat(updates, hasSize(1));
+
+    EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
+    Collection<?> actualOldValue = (Collection) projects.getOldValue();
+    Collection<?> actualNewValue = (Collection) projects.getNewValue();
+
+    assertThat(actualOldValue, hasSize(1));
+    assertThat(actualOldValue, containsInAnyOrder(50L));
+
+    assertThat(actualNewValue, hasSize(2));
+    assertThat(actualNewValue, containsInAnyOrder(50L, 51L));
   }
 
   @Test
@@ -79,7 +96,6 @@ public class BidirectionalManyToManySetTest extends BaseTest {
       em.persist(employee);
       return Pair.of(employee.getId(), project.getId());
     });
-
     clearContext();
 
     doInJpa(em -> {
@@ -87,20 +103,16 @@ public class BidirectionalManyToManySetTest extends BaseTest {
       Project project = em.find(Project.class, pair.getRight());
 
       employee.getProjects().add(project);
-      project.getEmployees().add(employee);
     });
 
+    System.out.println(testEntityTrackingListener.getUpdates());
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
-    assertThat(updates.size(), is(2));
+    assertThat(updates, hasSize(1));
 
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
-    assertThat(((Collection) projects.getOldValue()).size(), is(0));
-    assertThat(((Collection) projects.getNewValue()).size(), is(1));
-
-    EntityTrackingFieldData employees = testEntityTrackingListener.getUpdatedField("employees");
-    assertThat(((Collection) employees.getOldValue()).size(), is(0));
-    assertThat(((Collection) employees.getNewValue()).size(), is(1));
-
+    assertThat(((Collection<?>) projects.getOldValue()), hasSize(0));
+    assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(50L));
   }
 
   @Test
@@ -113,10 +125,7 @@ public class BidirectionalManyToManySetTest extends BaseTest {
       secondProject.setName("second");
 
       employee.getProjects().add(firstProject);
-      firstProject.getEmployees().add(employee);
-
       employee.getProjects().add(secondProject);
-      secondProject.getEmployees().add(employee);
 
       em.persist(firstProject);
       em.persist(secondProject);
@@ -130,20 +139,16 @@ public class BidirectionalManyToManySetTest extends BaseTest {
       Employee employee = em.find(Employee.class, employeeProjectIds.getLeft());
       Project project = em.find(Project.class, employeeProjectIds.getRight());
       employee.getProjects().remove(project);
-      project.getEmployees().remove(employee);
     });
 
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
-    System.out.println(updates);
-    assertThat(updates.size(), is(2));
+    assertThat(updates, hasSize(1));
 
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
-    assertThat(((Collection) projects.getOldValue()).size(), is(2));
-    assertThat(((Collection) projects.getNewValue()).size(), is(1));
-
-    EntityTrackingFieldData employees = testEntityTrackingListener.getUpdatedField("employees");
-    assertThat(((Collection) employees.getOldValue()).size(), is(1));
-    assertThat(((Collection) employees.getNewValue()).size(), is(0));
+    assertThat(((Collection<?>) projects.getOldValue()), hasSize(2));
+    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(50L, 51L));
+    assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(51L));
   }
 
   @Override
@@ -163,7 +168,7 @@ public class BidirectionalManyToManySetTest extends BaseTest {
     @SequenceGenerator(name = "employee_seq", sequenceName = "employee_seq")
     private Long id;
 
-    @ManyToMany(mappedBy = "employees")
+    @ManyToMany
     private Set<Project> projects = new HashSet<>();
 
     public Long getId() {
@@ -201,18 +206,6 @@ public class BidirectionalManyToManySetTest extends BaseTest {
 
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "employees_to_projects"
-        , joinColumns = {
-        @JoinColumn(name = "project_id", referencedColumnName = "id")
-    }
-        , inverseJoinColumns = {
-        @JoinColumn(name = "employee_id")
-    }
-    )
-    private List<Employee> employees = new ArrayList<>();
-
     public String getName() {
       return name;
     }
@@ -227,14 +220,6 @@ public class BidirectionalManyToManySetTest extends BaseTest {
 
     public void setId(Long id) {
       this.id = id;
-    }
-
-    public List<Employee> getEmployees() {
-      return employees;
-    }
-
-    public void setEmployees(List<Employee> employees) {
-      this.employees = employees;
     }
 
     @Override

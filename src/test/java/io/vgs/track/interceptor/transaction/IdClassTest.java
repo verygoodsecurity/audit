@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class IdClassTest extends BaseTest {
 
   @Test
-  public void shouldSupportIdClass() {
+  public void save() {
     doInJpa(em -> {
       User user = new User();
       user.setName("John");

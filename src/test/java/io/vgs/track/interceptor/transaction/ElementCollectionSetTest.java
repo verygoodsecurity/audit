@@ -1,10 +1,10 @@
 package io.vgs.track.interceptor.transaction;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,20 +16,35 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
 import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingFieldData;
 import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 @SuppressWarnings("Duplicates")
 public class ElementCollectionSetTest extends BaseTest {
   @Test
-  public void simplePersistSave() {
+  public void save() {
+    Set<String> names = Sets.newHashSet("Flash", "Batman", "Thor");
+
     doInJpa(em -> {
       Client client = new Client();
-      client.setNickNames(Sets.newHashSet("Flash", "Batman", "Thor"));
+      client.setNickNames(names);
       em.persist(client);
     });
-    System.out.println("INSERTS: ");
-    testEntityTrackingListener.getInserts().forEach(System.out::println);
+
+    assertThat(testEntityTrackingListener.getInserts().size(), is(1));
+    EntityTrackingFieldData nickNames = testEntityTrackingListener.getInsertedField("nickNames");
+    assertThat(nickNames.getOldValue(), is(nullValue()));
+    Collection<String> actualNickNames = (Collection<String>) nickNames.getNewValue();
+    assertThat(actualNickNames, hasSize(3));
+    assertThat(actualNickNames, containsInAnyOrder("Flash", "Batman", "Thor"));
   }
 
   @Test
@@ -39,30 +54,42 @@ public class ElementCollectionSetTest extends BaseTest {
       client.setNickNames(Sets.newHashSet("Flash", "Batman", "Thor"));
       em.persist(client);
       em.flush();
-      client.addNickName("Iron Man");
+      client.getNickNames().add("Iron Man");
     });
-    System.out.println("INSERTS: ");
-    testEntityTrackingListener.getInserts().forEach(System.out::println);
+    assertThat(testEntityTrackingListener.getInserts().size(), is(1));
+    EntityTrackingFieldData nickNames = testEntityTrackingListener.getInsertedField("nickNames");
+    assertThat(nickNames.getOldValue(), is(nullValue()));
+    Collection<String> actualNickNames = (Collection<String>) nickNames.getNewValue();
+    assertThat(actualNickNames, hasSize(4));
+    assertThat(actualNickNames, containsInAnyOrder("Flash", "Batman", "Thor", "Iron Man"));
   }
 
+
   @Test
-  public void createAndUpdate() {
+  public void update() {
     Long clientId = doInJpa(em -> {
       Client client = new Client();
       client.setNickNames(Sets.newHashSet("Flash", "Batman", "Thor"));
       em.persist(client);
       return client.getId();
     });
+    clearContext();
 
     doInJpa(em -> {
       Client client = em.find(Client.class, clientId);
-      client.getNickNames().addAll(Lists.newArrayList("Hulk", "Iron Man"));
+      client.getNickNames().addAll(Sets.newHashSet("Hulk", "Iron Man"));
     });
 
-    System.out.println("INSERTS: ");
-    testEntityTrackingListener.getInserts().forEach(System.out::println);
-    System.out.println("UPDATES: ");
-    testEntityTrackingListener.getUpdates().forEach(System.out::println);
+    assertThat(testEntityTrackingListener.getUpdates().size(), is(1));
+    EntityTrackingFieldData nickNames = testEntityTrackingListener.getUpdatedField("nickNames");
+    Collection<String> actualOldValue = (Collection<String>) nickNames.getOldValue();
+    Collection<String> actualNewValue = (Collection<String>) nickNames.getNewValue();
+
+    assertThat(actualOldValue, hasSize(3));
+    assertThat(actualOldValue, containsInAnyOrder("Flash", "Batman", "Thor"));
+
+    assertThat(actualNewValue, hasSize(5));
+    assertThat(actualNewValue, containsInAnyOrder("Flash", "Batman", "Thor", "Iron Man", "Hulk"));
   }
 
   @Entity
@@ -93,9 +120,6 @@ public class ElementCollectionSetTest extends BaseTest {
       this.nickNames = nickNames;
     }
 
-    public void addNickName(String nickName) {
-      nickNames.add(nickName);
-    }
   }
 
 

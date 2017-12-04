@@ -16,6 +16,7 @@ import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 public class NotTrackedFieldTest extends BaseTest {
@@ -29,7 +30,7 @@ public class NotTrackedFieldTest extends BaseTest {
     });
 
     List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
-    assertThat(inserts.size(), is(1));
+    assertThat(inserts, hasSize(1));
   }
 
   @Test
@@ -40,7 +41,7 @@ public class NotTrackedFieldTest extends BaseTest {
       em.persist(account);
 
       List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
-      assertThat(inserts.size(), is(0));
+      assertThat(inserts, hasSize(0));
     });
   }
 
@@ -54,7 +55,7 @@ public class NotTrackedFieldTest extends BaseTest {
       em.persist(passport);
 
       List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
-      assertThat(inserts.size(), is(0));
+      assertThat(inserts, hasSize(0));
     });
   }
 

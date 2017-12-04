@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class EmbeddedIdTest extends BaseTest {
 
   @Test
-  public void shouldTrackEmbeddedId() {
+  public void save() {
     UserId userId = new UserId("John", "NY");
 
     doInJpa(em -> {

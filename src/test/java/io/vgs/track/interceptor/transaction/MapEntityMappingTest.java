@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class MapEntityMappingTest extends BaseTest {
 
   @Test
-  public void mapOfEntities() {
+  public void mapMappingNotImplementedYet() {
     Map<String, Car> cars = new HashMap<>();
 
     doInJpa(em -> {

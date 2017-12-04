@@ -18,16 +18,13 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
 
 import io.vgs.track.data.Action;
 import io.vgs.track.data.EntityTrackingData;
@@ -45,7 +42,7 @@ import static java.util.stream.Collectors.toList;
 public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
   private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
   private static final String TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG = "The field %s should have either @Tracked or @NotTracked annotation";
-  public static final String PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET = "PersistentMap tracking is not supported yet";
+  private static final String PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET = "PersistentMap tracking is not supported yet";
 
   private EntityTrackingListener entityTrackingListener;
   private Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
@@ -109,11 +106,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     Object oldValue = isCollectionOfEntities ? oldCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : oldCollection;
     Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
 
-    EntityTrackingData entityData = new EntityTrackingData();
-    entityData.setId(key);
-    entityData.setClazz(owner.getClass());
-    entityData.setAction(Action.UPDATED);
-
+    EntityTrackingData entityData = new EntityTrackingData(key, owner.getClass(), Action.UPDATED);
     EntityTrackingFieldData fieldData = new EntityTrackingFieldData(collectionFieldName, oldValue, newValue);
     addOrUpdateFieldData(entityData, fieldData, newCollection);
   }
@@ -151,36 +144,19 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     Collection<?> newCollection = (Collection) collection;
 
     boolean isCollectionOfEntities = isCollectionOfEntities(collectionField);
-    Object oldValue = getFieldDefaultValue(owner.getClass(), collectionFieldName);
+    Object oldValue = null;
     Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
 
-    EntityTrackingData entityData = new EntityTrackingData();
-    entityData.setId(key);
-    entityData.setClazz(owner.getClass());
-    entityData.setAction(Action.CREATED);
-
+    EntityTrackingData entityData = new EntityTrackingData(key, owner.getClass(), Action.CREATED);
     EntityTrackingFieldData fieldData = new EntityTrackingFieldData(collectionFieldName, oldValue, newValue);
     addOrUpdateFieldData(entityData, fieldData, newCollection);
-  }
-
-  private Object getFieldDefaultValue(Class ownerClass, String fieldName) {
-    try {
-      Object newInstance = ownerClass.newInstance();
-      Field field = FieldUtils.getDeclaredField(newInstance.getClass(), fieldName, true);
-      return field.get(newInstance);
-    } catch (InstantiationException | IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private void createEntityTrackingData(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {
     if (!entity.getClass().isAnnotationPresent(Trackable.class)) {
       return;
     }
-    EntityTrackingData entityData = new EntityTrackingData();
-    entityData.setId(id);
-    entityData.setClazz(entity.getClass());
-    entityData.setAction(action);
+    EntityTrackingData entityData = new EntityTrackingData(id, entity.getClass(), action);
 
     boolean areTrackedAllFields = entity.getClass().isAnnotationPresent(Tracked.class);
     for (Field field : entity.getClass().getDeclaredFields()) {
@@ -209,15 +185,9 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
         if (isCollectionOfEntities(field)) {
           return;
         }
-        boolean isOldValueEntity = isEntity(oldValue);
-        boolean isNewValueEntity = isEntity(newValue);
 
-        if ((isOldValueEntity && !isOwnerSide(field)) || (isNewValueEntity && !isOwnerSide(field))) {
-          return;
-        }
-
-        oldValue = isOldValueEntity ? retrieveIdFromEntity(oldValue) : oldValue;
-        newValue = isNewValueEntity ? retrieveIdFromEntity(newValue) : newValue;
+        oldValue = isEntity(oldValue) ? retrieveIdFromEntity(oldValue) : oldValue;
+        newValue = isEntity(newValue) ? retrieveIdFromEntity(newValue) : newValue;
 
         if (!Utils.equalsOrCompareEquals(oldValue, newValue)) {
           addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), oldValue, newValue), newValue);
@@ -226,7 +196,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     }
   }
 
-  // implemented in onCollectionCreate and onCollectionUpdate
+  // it's implemented in onCollectionCreate and onCollectionUpdate
   private boolean isCollectionOfEntities(Field field) {
     return field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToMany.class);
   }
@@ -234,27 +204,15 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   private void addOrUpdateFieldData(EntityTrackingData entityData, EntityTrackingFieldData fieldData, Object newValue) {
     EntityTrackingData entityTrackingData = changes.get(entityData);
     if (entityTrackingData != null) {
-      List<EntityTrackingFieldData> trackingFields = entityTrackingData.getEntityTrackingFields();
-      // if new field already exists then just refresh its value, otherwise add a new one
-      int indexOfExistentField = trackingFields.indexOf(fieldData);
-      if (indexOfExistentField >= 0) {
-        EntityTrackingFieldData currentField = trackingFields.get(indexOfExistentField);
-        currentField.setNewValue(newValue);
-      } else {
-        trackingFields.add(fieldData);
-      }
+      entityTrackingData.addOrUpdateEntityTrackingField(fieldData, newValue);
     } else {
-      entityData.getEntityTrackingFields().add(fieldData);
+      entityData.addEntityTrackingField(fieldData);
       changes.put(entityData, entityData);
     }
   }
 
   private String getFieldNameFromRole(Object owner, String collectionRole) {
     return collectionRole.replace(owner.getClass().getName() + ".", "");
-  }
-
-  private boolean isOwnerSide(Field field) {
-    return field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(PrimaryKeyJoinColumn.class);
   }
 
   private boolean isEntity(Object value) {

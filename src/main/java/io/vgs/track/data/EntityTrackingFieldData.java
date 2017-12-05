@@ -3,8 +3,8 @@ package io.vgs.track.data;
 import com.google.common.base.Objects;
 
 public class EntityTrackingFieldData {
-  private String name;
-  private Object oldValue;
+  private final String name;
+  private final Object oldValue;
   private Object newValue;
 
   public EntityTrackingFieldData(String name, Object oldValue, Object newValue) {
@@ -17,16 +17,8 @@ public class EntityTrackingFieldData {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public Object getOldValue() {
     return oldValue;
-  }
-
-  public void setOldValue(Object oldValue) {
-    this.oldValue = oldValue;
   }
 
   public Object getNewValue() {

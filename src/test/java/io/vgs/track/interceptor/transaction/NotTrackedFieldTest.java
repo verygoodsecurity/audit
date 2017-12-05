@@ -1,10 +1,5 @@
 package io.vgs.track.interceptor.transaction;
 
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.meta.NotTracked;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
 import org.junit.Test;
 
 import java.util.Date;
@@ -14,10 +9,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.meta.NotTracked;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
-public class NotTrackedFieldTest extends BaseTransactionTest {
+public class NotTrackedFieldTest extends BaseTest {
   @Test
   public void shouldNotTrackEntityFieldIfItDoesNotHaveTrackedAnnotation() {
     doInJpa(em -> {
@@ -27,8 +29,8 @@ public class NotTrackedFieldTest extends BaseTransactionTest {
       em.persist(client);
     });
 
-    List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
-    assertThat(inserts.size(), is(1));
+    List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
+    assertThat(inserts, hasSize(1));
   }
 
   @Test
@@ -38,8 +40,8 @@ public class NotTrackedFieldTest extends BaseTransactionTest {
       account.setAmount(300);
       em.persist(account);
 
-      List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
-      assertThat(inserts.size(), is(0));
+      List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
+      assertThat(inserts, hasSize(0));
     });
   }
 
@@ -52,8 +54,8 @@ public class NotTrackedFieldTest extends BaseTransactionTest {
       passport.setOwner("John");
       em.persist(passport);
 
-      List<EntityTrackingData> inserts = entityTrackingListener.getInserts();
-      assertThat(inserts.size(), is(0));
+      List<EntityTrackingData> inserts = testEntityTrackingListener.getInserts();
+      assertThat(inserts, hasSize(0));
     });
   }
 

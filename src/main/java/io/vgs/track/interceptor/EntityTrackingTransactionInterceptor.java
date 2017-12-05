@@ -111,7 +111,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
       addOrUpdateFieldData(
           new EntityTrackingData(key, owner.getClass(), Action.UPDATED),
           new EntityTrackingFieldData(collectionFieldName, oldValue, newValue),
-          newCollection
+          newValue
       );
     }
   }
@@ -154,7 +154,7 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
 
     EntityTrackingData entityData = new EntityTrackingData(key, owner.getClass(), Action.CREATED);
     EntityTrackingFieldData fieldData = new EntityTrackingFieldData(collectionFieldName, oldValue, newValue);
-    addOrUpdateFieldData(entityData, fieldData, newCollection);
+    addOrUpdateFieldData(entityData, fieldData, newValue);
   }
 
   private void createEntityTrackingData(Serializable id, Object entity, Object[] previousState, Object[] currentState, String[] propertyNames, Action action) {

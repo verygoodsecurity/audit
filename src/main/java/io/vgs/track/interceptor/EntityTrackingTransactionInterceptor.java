@@ -104,12 +104,16 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
     Collection<?> newCollection = (Collection) collection;
 
     boolean isCollectionOfEntities = isCollectionOfEntities(collectionField);
-    Object oldValue = isCollectionOfEntities ? oldCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : oldCollection;
-    Object newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
+    Collection oldValue = isCollectionOfEntities ? oldCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : oldCollection;
+    Collection newValue = isCollectionOfEntities ? newCollection.stream().map(this::retrieveIdFromEntity).collect(toList()) : newCollection;
 
-    EntityTrackingData entityData = new EntityTrackingData(key, owner.getClass(), Action.UPDATED);
-    EntityTrackingFieldData fieldData = new EntityTrackingFieldData(collectionFieldName, oldValue, newValue);
-    addOrUpdateFieldData(entityData, fieldData, newCollection);
+    if (!Utils.collectionsEqual(oldValue, newValue)) {
+      addOrUpdateFieldData(
+          new EntityTrackingData(key, owner.getClass(), Action.UPDATED),
+          new EntityTrackingFieldData(collectionFieldName, oldValue, newValue),
+          newCollection
+      );
+    }
   }
 
   @Override

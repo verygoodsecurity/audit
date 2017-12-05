@@ -10,6 +10,7 @@ import org.hibernate.collection.internal.PersistentMap;
 import org.hibernate.collection.internal.PersistentSet;
 import org.hibernate.engine.spi.CollectionEntry;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,7 +217,16 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   }
 
   private boolean isEntity(Object value) {
-    return value != null && value.getClass().isAnnotationPresent(Entity.class);
+    return value != null && getClassForHibernateObject(value).isAnnotationPresent(Entity.class);
+  }
+
+  private static Class<?> getClassForHibernateObject(Object object) {
+    if (object instanceof HibernateProxy) {
+      LazyInitializer lazyInitializer = ((HibernateProxy) object).getHibernateLazyInitializer();
+      return lazyInitializer.getPersistentClass();
+    } else {
+      return object.getClass();
+    }
   }
 
   private Object retrieveIdFromEntity(Object entity) {

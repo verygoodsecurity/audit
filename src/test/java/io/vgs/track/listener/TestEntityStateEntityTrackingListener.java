@@ -82,4 +82,11 @@ public class TestEntityStateEntityTrackingListener implements EntityTrackingList
   public void onEntityChanged(EntityTrackingData entityTrackingData) {
     changes.add(entityTrackingData);
   }
+
+  public EntityTrackingData getUpdatedEntity(Long id) {
+    return getUpdates().stream()
+        .filter(data -> data.getId().equals(id))
+        .findFirst()
+        .orElse(null);
+  }
 }

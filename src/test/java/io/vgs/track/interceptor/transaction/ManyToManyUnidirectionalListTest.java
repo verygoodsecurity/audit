@@ -100,7 +100,6 @@ public class ManyToManyUnidirectionalListTest extends BaseTest {
       employee.getProjects().add(project);
     });
 
-    System.out.println(testEntityTrackingListener.getUpdates());
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
     assertThat(updates, hasSize(1));
 

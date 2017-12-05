@@ -169,7 +169,6 @@ public class PrimitiveFieldsTest extends BaseTest {
     });
 
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
-    System.out.println(updates);
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData fieldNumber1 = testEntityTrackingListener.getUpdatedField("fieldNumber1");
     assertThat(fieldNumber1.getOldValue(), is("old 1"));

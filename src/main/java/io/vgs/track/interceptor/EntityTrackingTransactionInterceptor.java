@@ -195,10 +195,15 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
         newValue = isEntity(newValue) ? retrieveIdFromEntity(newValue) : newValue;
 
         if (!Utils.equalsOrCompareEquals(oldValue, newValue)) {
-          addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), oldValue, newValue), newValue);
+          addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), getFieldValue(oldValue, field), getFieldValue(newValue, field)), newValue);
         }
       }
     }
+  }
+
+  private Object getFieldValue(Object value, Field field) {
+    Tracked tracked = field.getAnnotation(Tracked.class);
+    return tracked != null && tracked.replace() ? tracked.replaceWith() : value;
   }
 
   // it's implemented in onCollectionCreate and onCollectionUpdate

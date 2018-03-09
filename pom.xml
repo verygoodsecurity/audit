@@ -37,9 +37,9 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>jfog</id>
+            <id>jfrog</id>
             <name>jfrog</name>
-            <url>https://dl.bintray.com/vg/vgs-misc</url>
+            <url>https://dl.bintray.com/vg/vgs-oss</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -141,7 +141,7 @@
             <extension>
                 <groupId>io.vgs.tools</groupId>
                 <artifactId>aws-maven</artifactId>
-                <version>1.4.2</version>
+                <version>1.4.4</version>
             </extension>
         </extensions>
 

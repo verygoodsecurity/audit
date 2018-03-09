@@ -21,10 +21,15 @@ public class ReplaceTrackedFieldTest extends BaseTest {
 
   @Test
   public void testReplaceValues() {
+    final String trackedFieldValue = "tracked field";
+    final String anotherTrackedFieldValue = "another tracked field";
+
     doInJpa(em -> {
       Account account = new Account();
       account.setName("Jonathan");
       account.setVersion(42);
+      account.setTracked(trackedFieldValue);
+      account.setAnotherTracked(anotherTrackedFieldValue);
       em.persist(account);
     });
 
@@ -38,6 +43,10 @@ public class ReplaceTrackedFieldTest extends BaseTest {
     EntityTrackingFieldData fieldData2 = testEntityTrackingListener.getInsertedField("version");
     Assert.assertThat(fieldData2.getNewValue(), CoreMatchers.equalTo(Tracked.DEFAULT_REPLACE));
     Assert.assertThat(fieldData2.getOldValue(), CoreMatchers.equalTo(Tracked.DEFAULT_REPLACE));
+    EntityTrackingFieldData fieldData3 = testEntityTrackingListener.getInsertedField("tracked");
+    Assert.assertThat(fieldData3.getNewValue(), CoreMatchers.equalTo(trackedFieldValue));
+    EntityTrackingFieldData fieldData4 = testEntityTrackingListener.getInsertedField("anotherTracked");
+    Assert.assertThat(fieldData4.getNewValue(), CoreMatchers.equalTo(anotherTrackedFieldValue));
   }
 
   @Override
@@ -59,6 +68,28 @@ public class ReplaceTrackedFieldTest extends BaseTest {
 
     @Tracked(replace = true)
     private Integer version;
+
+    @Tracked
+    private String tracked;
+
+    public String getTracked() {
+      return tracked;
+    }
+
+    public void setTracked(String tracked) {
+      this.tracked = tracked;
+    }
+
+    public String getAnotherTracked() {
+      return anotherTracked;
+    }
+
+    public void setAnotherTracked(String anotherTracked) {
+      this.anotherTracked = anotherTracked;
+    }
+
+    @Tracked(replace = false)
+    private String anotherTracked;
 
     public Integer getVersion() {
       return version;

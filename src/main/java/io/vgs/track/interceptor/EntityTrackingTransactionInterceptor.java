@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Entity;
@@ -195,10 +196,17 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
         newValue = isEntity(newValue) ? retrieveIdFromEntity(newValue) : newValue;
 
         if (!Utils.equalsOrCompareEquals(oldValue, newValue)) {
-          addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), oldValue, newValue), newValue);
+          addOrUpdateFieldData(entityData, new EntityTrackingFieldData(field.getName(), getFieldValue(oldValue, field), getFieldValue(newValue, field)), newValue);
         }
       }
     }
+  }
+
+  private Object getFieldValue(Object value, Field field) {
+    return Optional.ofNullable(field.getAnnotation(Tracked.class))
+        .filter(Tracked::replace)
+        .map(t -> (Object) t.replaceWith())
+        .orElse(value);
   }
 
   // it's implemented in onCollectionCreate and onCollectionUpdate

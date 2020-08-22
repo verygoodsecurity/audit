@@ -49,7 +49,7 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     assertThat(projects.getOldValue(), is(nullValue()));
     Collection<?> actualProjectsNewValue = (Collection) projects.getNewValue();
     assertThat(actualProjectsNewValue, hasSize(1));
-    assertThat(actualProjectsNewValue, containsInAnyOrder(50L));
+    assertThat(actualProjectsNewValue, containsInAnyOrder(1L));
   }
 
   @Test
@@ -81,10 +81,10 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     Collection<?> actualNewValue = (Collection) projects.getNewValue();
 
     assertThat(actualOldValue, hasSize(1));
-    assertThat(actualOldValue, containsInAnyOrder(50L));
+    assertThat(actualOldValue, containsInAnyOrder(1L));
 
     assertThat(actualNewValue, hasSize(2));
-    assertThat(actualNewValue, containsInAnyOrder(50L, 51L));
+    assertThat(actualNewValue, containsInAnyOrder(1L, 2L));
   }
 
   @Test
@@ -111,7 +111,7 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
     assertThat(((Collection<?>) projects.getOldValue()), hasSize(0));
     assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(1L));
   }
 
   @Test
@@ -145,9 +145,9 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
 
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
     assertThat(((Collection<?>) projects.getOldValue()), hasSize(2));
-    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(50L, 51L));
+    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(1L, 2L));
     assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(51L));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(2L));
   }
 
   @Override

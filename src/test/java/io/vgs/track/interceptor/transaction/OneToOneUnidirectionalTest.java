@@ -43,7 +43,7 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     assertThat(inserts, hasSize(1));
     EntityTrackingFieldData client = testEntityTrackingListener.getInsertedField("address");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(50L));
+    assertThat(client.getNewValue(), is(1L));
   }
 
   @Test
@@ -62,7 +62,7 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getUpdatedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(50L));
+    assertThat(address.getNewValue(), is(1L));
   }
 
   @Test
@@ -94,8 +94,8 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getUpdatedField("address");
-    assertThat(address.getOldValue(), is(50L));
-    assertThat(address.getNewValue(), is(51L));
+    assertThat(address.getOldValue(), is(1L));
+    assertThat(address.getNewValue(), is(2L));
   }
 
   @Entity

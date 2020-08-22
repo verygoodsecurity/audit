@@ -54,12 +54,12 @@ public class ManyToManyBidirectionalListTest extends BaseTest {
     assertThat(employees.getOldValue(), is(nullValue()));
     Collection<?> actualEmployeesNewValue = (Collection) employees.getNewValue();
     assertThat(actualEmployeesNewValue, hasSize(1));
-    assertThat(actualEmployeesNewValue, containsInAnyOrder(50L));
+    assertThat(actualEmployeesNewValue, containsInAnyOrder(1L));
 
     assertThat(projects.getOldValue(), is(nullValue()));
     Collection<?> actualProjectsNewValue = (Collection) employees.getNewValue();
     assertThat(actualProjectsNewValue, hasSize(1));
-    assertThat(actualProjectsNewValue, containsInAnyOrder(50L));
+    assertThat(actualProjectsNewValue, containsInAnyOrder(1L));
   }
 
   @Test
@@ -88,7 +88,7 @@ public class ManyToManyBidirectionalListTest extends BaseTest {
     EntityTrackingFieldData employees = testEntityTrackingListener.getInsertedField("employees");
     assertThat(employees.getOldValue(), is(nullValue()));
     Collection<?> actualEmployeesNewValue = (Collection) employees.getNewValue();
-    assertThat(actualEmployeesNewValue, containsInAnyOrder(50L));
+    assertThat(actualEmployeesNewValue, containsInAnyOrder(1L));
   }
 
   @Test
@@ -116,7 +116,7 @@ public class ManyToManyBidirectionalListTest extends BaseTest {
     EntityTrackingFieldData employees = testEntityTrackingListener.getUpdatedField("employees");
     assertThat(((Collection<?>) employees.getOldValue()), hasSize(0));
     assertThat(((Collection<?>) employees.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) employees.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) employees.getNewValue()), containsInAnyOrder(1L));
   }
 
   @Test
@@ -154,13 +154,13 @@ public class ManyToManyBidirectionalListTest extends BaseTest {
 
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
     assertThat(((Collection<?>) projects.getOldValue()), hasSize(2));
-    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(50L, 51L));
+    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(1L, 2L));
     assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(51L));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(2L));
 
     EntityTrackingFieldData employees = testEntityTrackingListener.getUpdatedField("employees");
     assertThat(((Collection<?>) employees.getOldValue()), hasSize(1));
-    assertThat(((Collection<?>) employees.getOldValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) employees.getOldValue()), containsInAnyOrder(1L));
     assertThat(((Collection<?>) employees.getNewValue()), hasSize(0));
   }
 

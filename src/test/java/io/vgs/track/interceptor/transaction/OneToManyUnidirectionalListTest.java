@@ -45,7 +45,7 @@ public class OneToManyUnidirectionalListTest extends BaseTest {
 
     EntityTrackingFieldData cars = testEntityTrackingListener.getInsertedField("cars");
     assertThat(cars.getOldValue(), is(nullValue()));
-    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(1L));
   }
 
   @Test
@@ -68,7 +68,7 @@ public class OneToManyUnidirectionalListTest extends BaseTest {
 
     EntityTrackingFieldData cars = testEntityTrackingListener.getInsertedField("cars");
     assertThat(cars.getOldValue(), is(nullValue()));
-    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(1L));
   }
 
   @Entity

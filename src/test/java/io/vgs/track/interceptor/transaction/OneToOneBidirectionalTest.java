@@ -44,7 +44,7 @@ public class OneToOneBidirectionalTest extends BaseTest {
     assertThat(inserts, hasSize(1));
     EntityTrackingFieldData client = testEntityTrackingListener.getInsertedField("client");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(50L));
+    assertThat(client.getNewValue(), is(1L));
   }
 
   @Test
@@ -66,10 +66,10 @@ public class OneToOneBidirectionalTest extends BaseTest {
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getInsertedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(50L));
+    assertThat(address.getNewValue(), is(1L));
     EntityTrackingFieldData client = testEntityTrackingListener.getUpdatedField("client");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(50L));
+    assertThat(client.getNewValue(), is(1L));
   }
 
   @Test
@@ -105,18 +105,18 @@ public class OneToOneBidirectionalTest extends BaseTest {
 
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
     assertThat(updates, hasSize(2));
-    EntityTrackingData firstAddress = testEntityTrackingListener.getUpdatedEntity(50L);
-    EntityTrackingData secondAddress = testEntityTrackingListener.getUpdatedEntity(51L);
+    EntityTrackingData firstAddress = testEntityTrackingListener.getUpdatedEntity(1L);
+    EntityTrackingData secondAddress = testEntityTrackingListener.getUpdatedEntity(2L);
     assertThat(firstAddress.getEntityTrackingFields(), hasSize(1));
     assertThat(secondAddress.getEntityTrackingFields(), hasSize(1));
 
     EntityTrackingFieldData clientOfFirstAddress = firstAddress.getEntityTrackingFields().get(0);
-    assertThat(clientOfFirstAddress.getOldValue(), is(50L));
+    assertThat(clientOfFirstAddress.getOldValue(), is(1L));
     assertThat(clientOfFirstAddress.getNewValue(), is(nullValue()));
 
     EntityTrackingFieldData clientOfSecondAddress = secondAddress.getEntityTrackingFields().get(0);
     assertThat(clientOfSecondAddress.getOldValue(), is(nullValue()));
-    assertThat(clientOfSecondAddress.getNewValue(), is(50L));
+    assertThat(clientOfSecondAddress.getNewValue(), is(1L));
   }
 
   @Entity

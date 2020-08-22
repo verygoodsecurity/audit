@@ -50,11 +50,11 @@ public class OneToManyBidirectionalSetTest extends BaseTest {
 
     EntityTrackingFieldData cars = testEntityTrackingListener.getInsertedField("cars");
     assertThat(cars.getOldValue(), is(nullValue()));
-    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(1L));
 
     EntityTrackingFieldData address = testEntityTrackingListener.getInsertedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(50L));
+    assertThat(address.getNewValue(), is(1L));
   }
 
   @Test
@@ -81,11 +81,11 @@ public class OneToManyBidirectionalSetTest extends BaseTest {
 
     EntityTrackingFieldData cars = testEntityTrackingListener.getInsertedField("cars");
     assertThat(cars.getOldValue(), is(nullValue()));
-    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(50L));
+    assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(1L));
 
     EntityTrackingFieldData address = testEntityTrackingListener.getUpdatedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(50L));
+    assertThat(address.getNewValue(), is(1L));
   }
 
   @Entity

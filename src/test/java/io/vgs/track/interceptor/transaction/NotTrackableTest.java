@@ -1,20 +1,16 @@
 package io.vgs.track.interceptor.transaction;
 
-import org.junit.Test;
-
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import io.vgs.track.BaseTest;
 import io.vgs.track.data.EntityTrackingData;
 import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import org.junit.jupiter.api.Test;
 
 public class NotTrackableTest extends BaseTest {
 
@@ -38,6 +34,7 @@ public class NotTrackableTest extends BaseTest {
 
   @Entity
   private static class Client {
+
     @Id
     @GeneratedValue
     private Long id;

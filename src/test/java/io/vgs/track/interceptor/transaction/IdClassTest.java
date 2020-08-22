@@ -1,10 +1,14 @@
 package io.vgs.track.interceptor.transaction;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
 import java.io.Serializable;
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,14 +17,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
-
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
 
 public class IdClassTest extends BaseTest {
 
@@ -106,6 +103,7 @@ public class IdClassTest extends BaseTest {
   @Trackable
   @Tracked
   private static class UserAccount {
+
     @Id
     @ManyToOne(optional = false)
     @JoinColumn(name = "account_id", referencedColumnName = "id", insertable = false, updatable = false)
@@ -134,17 +132,24 @@ public class IdClassTest extends BaseTest {
   }
 
   private static class UserAccountPK implements Serializable {
+
     private User user;
     private Account account;
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
 
       UserAccountPK that = (UserAccountPK) o;
 
-      if (user != null ? !user.equals(that.user) : that.user != null) return false;
+      if (user != null ? !user.equals(that.user) : that.user != null) {
+        return false;
+      }
       return account != null ? account.equals(that.account) : that.account == null;
     }
 

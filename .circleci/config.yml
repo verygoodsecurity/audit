@@ -1,0 +1,149 @@
+version: 2.1
+
+job-defaults: &job-defaults
+  working_directory: &working_directory
+                       ~/app
+  environment:
+    - TEST_RESULTS: /tmp/test-results
+    - AWS_DEFAULT_REGION: us-west-2
+    - AWS_REGION: us-west-2
+    - AWS_ACCOUNT_ID: "883127560329"
+    - AWS_PROFILE: dev/vault
+
+setup-env: &setup-env
+  run:
+    name: Setup AWS access
+    command: ./.circleci/setup-aws-config.sh
+
+save-maven-cache: &save-maven-cache
+  save_cache:
+    key: track-{{ checksum "pom.xml" }}
+    paths:
+      - ~/.m2
+
+restore-maven-cache: &restore-maven-cache
+  restore_cache:
+    key: track-{{ checksum "pom.xml" }}
+
+persist-workspace: &persist-workspace
+  persist_to_workspace:
+    root: .
+    paths: "*"
+
+attach-workspace: &attach-workspace
+  attach_workspace:
+    at: *working_directory
+
+jobs:
+  build-test:
+    machine: true
+    working_directory: ~/app
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+      - checkout
+      - <<: *restore-maven-cache
+      - <<: *setup-env
+      - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
+      - <<: *save-maven-cache
+      - <<: *persist-workspace
+
+  deploy-snapshot:
+    machine:
+      enabled: true
+    <<: *job-defaults
+    steps:
+      - *attach-workspace
+      - <<: *setup-env
+      - run:
+          name: Deploy snapshot
+          command: |
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            docker-compose run deploy-snapshot
+
+  deploy-release:
+    machine:
+      enabled: true
+    <<: *job-defaults
+    steps:
+      - *attach-workspace
+      - <<: *setup-env
+      - add_ssh_keys:
+          fingerprints:
+            - ChangeMeIfNeeded
+      - run:
+          name: Deploy release
+          command: |
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            git config user.name "circleci"
+            git config user.email "dev@vgs.io"
+            docker-compose run deploy-release
+            git push origin master
+
+  validate-production:
+    <<: *job-defaults
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - setup_remote_docker
+      - run:
+          name: Validate a production build
+          command: |
+            docker login -u="$QUAY_DOCKER_LOGIN" -p="$QUAY_DOCKER_LOGIN_PASSWORD" quay.io
+            docker run -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN quay.io/verygoodsecurity/ghch:$GHCH_VERSION validate --repo-name verygoodsecurity/$CIRCLE_PROJECT_REPONAME --tag-name $CIRCLE_TAG --tag-regex "(.*)"
+
+  complete-production:
+    <<: *job-defaults
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - setup_remote_docker
+      - run:
+          name: Complete a production build
+          command: |
+            docker login -u="$QUAY_DOCKER_LOGIN" -p="$QUAY_DOCKER_LOGIN_PASSWORD" quay.io
+            docker run -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN -e CLUBHOUSE_API_TOKEN=$CLUBHOUSE_API_TOKEN quay.io/verygoodsecurity/ghch:$GHCH_VERSION complete --repo-name verygoodsecurity/$CIRCLE_PROJECT_REPONAME --tag-name $CIRCLE_TAG --tag-regex "(.*)"
+
+workflows:
+  build-test-and-deploy:
+    jobs:
+      - build-test:
+          context: artifact-publisher
+          filters:
+            tags:
+              only: /.*/
+      - deploy-snapshot:
+          context: artifact-publisher
+          requires:
+            - build-test
+          filters:
+            branches:
+              only: master
+      - deploy-release:
+          context: artifact-publisher
+          requires:
+            - build-test
+            - validate-production
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - validate-production:
+          context: ghch
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+(?:-\w+){0,1}$/
+            branches:
+              ignore: /.*/
+      - complete-production:
+          context: ghch
+          requires:
+            - deploy-release
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+(?:-\w+){0,1}$/
+            branches:
+              ignore: /.*/

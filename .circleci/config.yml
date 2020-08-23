@@ -71,7 +71,7 @@ jobs:
       - <<: *setup-env
       - add_ssh_keys:
           fingerprints:
-            - ChangeMeIfNeeded
+            - "41:9b:7b:a7:32:3e:c4:da:69:4e:c6:64:9a:5a:12:78"
       - run:
           name: Deploy release
           command: |

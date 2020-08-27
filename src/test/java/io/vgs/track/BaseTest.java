@@ -1,7 +1,20 @@
 package io.vgs.track;
 
 import com.p6spy.engine.spy.P6DataSource;
-
+import io.vgs.track.interceptor.EntityTrackingListenerAware;
+import io.vgs.track.interceptor.EntityTrackingTransactionInterceptor;
+import io.vgs.track.listener.TestEntityStateEntityTrackingListener;
+import io.vgs.track.sqltracker.QueryCountInfoHolder;
+import io.vgs.track.sqltracker.SqlCountTrackerDatasource;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,39 +22,23 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.junit.After;
-import org.junit.Before;
-
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.sql.DataSource;
-
-import io.vgs.track.interceptor.EntityTrackingListenerAware;
-import io.vgs.track.interceptor.EntityTrackingTransactionInterceptor;
-import io.vgs.track.listener.TestEntityStateEntityTrackingListener;
-import io.vgs.track.sqltracker.QueryCountInfoHolder;
-import io.vgs.track.sqltracker.SqlCountTrackerDatasource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseTest {
+
   private SessionFactory sf;
   private EntityManagerFactory emf;
 
   protected TestEntityStateEntityTrackingListener testEntityTrackingListener = new TestEntityStateEntityTrackingListener();
 
-  @Before
+  @BeforeEach
   public void init() {
     sf = newSessionFactory();
     emf = newEntityManagerFactory();
   }
 
-  @After
+  @AfterEach
   public void destroy() {
     clearContext();
     sf.close();
@@ -127,7 +124,9 @@ public abstract class BaseTest {
       result = function.apply(entityManager);
       txn.commit();
     } catch (RuntimeException e) {
-      if (txn != null && txn.isActive()) txn.rollback();
+      if (txn != null && txn.isActive()) {
+        txn.rollback();
+      }
       throw e;
     } finally {
       if (entityManager != null) {
@@ -148,7 +147,9 @@ public abstract class BaseTest {
       function.accept(entityManager);
       txn.commit();
     } catch (RuntimeException e) {
-      if (txn != null && txn.isActive()) txn.rollback();
+      if (txn != null && txn.isActive()) {
+        txn.rollback();
+      }
       throw e;
     } finally {
       if (entityManager != null) {

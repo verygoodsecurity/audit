@@ -1,10 +1,15 @@
 package io.vgs.track.interceptor.transaction;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,15 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
-
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
 
 public class MapEntityMappingTest extends BaseTest {
 
@@ -56,6 +53,7 @@ public class MapEntityMappingTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Car {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "car_seq")
     @SequenceGenerator(name = "car_seq", sequenceName = "car_seq")
@@ -96,6 +94,7 @@ public class MapEntityMappingTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")

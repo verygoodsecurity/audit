@@ -1,26 +1,23 @@
 package io.vgs.track.interceptor.transaction;
 
-import org.junit.Test;
-
-import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 import io.vgs.track.BaseTest;
 import io.vgs.track.data.EntityTrackingData;
 import io.vgs.track.data.EntityTrackingFieldData;
 import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("Duplicates")
 public class PrimitiveFieldsTest extends BaseTest {
@@ -193,6 +190,7 @@ public class PrimitiveFieldsTest extends BaseTest {
   @Trackable
   @Tracked
   public static class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
     @SequenceGenerator(name = "account_seq", sequenceName = "account_seq")
@@ -221,6 +219,7 @@ public class PrimitiveFieldsTest extends BaseTest {
   @Trackable
   @Tracked
   public static class SimpleEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
     @SequenceGenerator(name = "account_seq", sequenceName = "account_seq")

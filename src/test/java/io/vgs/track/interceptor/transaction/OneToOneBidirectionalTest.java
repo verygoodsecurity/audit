@@ -1,9 +1,16 @@
 package io.vgs.track.interceptor.transaction;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,17 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
-
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("Duplicates")
 public class OneToOneBidirectionalTest extends BaseTest {
@@ -44,7 +41,7 @@ public class OneToOneBidirectionalTest extends BaseTest {
     assertThat(inserts, hasSize(1));
     EntityTrackingFieldData client = testEntityTrackingListener.getInsertedField("client");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(50L));
+    assertThat(client.getNewValue(), is(1L));
   }
 
   @Test
@@ -66,10 +63,10 @@ public class OneToOneBidirectionalTest extends BaseTest {
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getInsertedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(50L));
+    assertThat(address.getNewValue(), is(1L));
     EntityTrackingFieldData client = testEntityTrackingListener.getUpdatedField("client");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(50L));
+    assertThat(client.getNewValue(), is(1L));
   }
 
   @Test
@@ -105,24 +102,25 @@ public class OneToOneBidirectionalTest extends BaseTest {
 
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
     assertThat(updates, hasSize(2));
-    EntityTrackingData firstAddress = testEntityTrackingListener.getUpdatedEntity(50L);
-    EntityTrackingData secondAddress = testEntityTrackingListener.getUpdatedEntity(51L);
+    EntityTrackingData firstAddress = testEntityTrackingListener.getUpdatedEntity(1L);
+    EntityTrackingData secondAddress = testEntityTrackingListener.getUpdatedEntity(2L);
     assertThat(firstAddress.getEntityTrackingFields(), hasSize(1));
     assertThat(secondAddress.getEntityTrackingFields(), hasSize(1));
 
     EntityTrackingFieldData clientOfFirstAddress = firstAddress.getEntityTrackingFields().get(0);
-    assertThat(clientOfFirstAddress.getOldValue(), is(50L));
+    assertThat(clientOfFirstAddress.getOldValue(), is(1L));
     assertThat(clientOfFirstAddress.getNewValue(), is(nullValue()));
 
     EntityTrackingFieldData clientOfSecondAddress = secondAddress.getEntityTrackingFields().get(0);
     assertThat(clientOfSecondAddress.getOldValue(), is(nullValue()));
-    assertThat(clientOfSecondAddress.getNewValue(), is(50L));
+    assertThat(clientOfSecondAddress.getNewValue(), is(1L));
   }
 
   @Entity
   @Trackable
   @Tracked
   public static class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
@@ -165,6 +163,7 @@ public class OneToOneBidirectionalTest extends BaseTest {
   @Trackable
   @Tracked
   public static class Passport {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")
@@ -194,6 +193,7 @@ public class OneToOneBidirectionalTest extends BaseTest {
   @Trackable
   @Tracked
   public static class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")

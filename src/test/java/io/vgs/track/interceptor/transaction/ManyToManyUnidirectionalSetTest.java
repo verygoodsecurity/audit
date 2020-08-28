@@ -1,28 +1,32 @@
 package io.vgs.track.interceptor.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Test;
 
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
+
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 @SuppressWarnings("Duplicates")
 public class ManyToManyUnidirectionalSetTest extends BaseTest {
@@ -45,7 +49,7 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     assertThat(projects.getOldValue(), is(nullValue()));
     Collection<?> actualProjectsNewValue = (Collection) projects.getNewValue();
     assertThat(actualProjectsNewValue, hasSize(1));
-    assertThat(actualProjectsNewValue, containsInAnyOrder(1L));
+    assertThat(actualProjectsNewValue, containsInAnyOrder(50L));
   }
 
   @Test
@@ -77,10 +81,10 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     Collection<?> actualNewValue = (Collection) projects.getNewValue();
 
     assertThat(actualOldValue, hasSize(1));
-    assertThat(actualOldValue, containsInAnyOrder(1L));
+    assertThat(actualOldValue, containsInAnyOrder(50L));
 
     assertThat(actualNewValue, hasSize(2));
-    assertThat(actualNewValue, containsInAnyOrder(1L, 2L));
+    assertThat(actualNewValue, containsInAnyOrder(50L, 51L));
   }
 
   @Test
@@ -107,7 +111,7 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
     assertThat(((Collection<?>) projects.getOldValue()), hasSize(0));
     assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(1L));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(50L));
   }
 
   @Test
@@ -141,9 +145,9 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
 
     EntityTrackingFieldData projects = testEntityTrackingListener.getUpdatedField("projects");
     assertThat(((Collection<?>) projects.getOldValue()), hasSize(2));
-    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(1L, 2L));
+    assertThat(((Collection<?>) projects.getOldValue()), containsInAnyOrder(50L, 51L));
     assertThat(((Collection<?>) projects.getNewValue()), hasSize(1));
-    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(2L));
+    assertThat(((Collection<?>) projects.getNewValue()), containsInAnyOrder(51L));
   }
 
   @Override
@@ -158,7 +162,6 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
   @Tracked
   @Trackable
   public static class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_seq")
     @SequenceGenerator(name = "employee_seq", sequenceName = "employee_seq")
@@ -195,7 +198,6 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
   @Tracked
   @Trackable
   public static class Project {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_seq")
     @SequenceGenerator(name = "project_seq", sequenceName = "project_seq")
@@ -228,12 +230,8 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
 
       Project project = (Project) o;
 

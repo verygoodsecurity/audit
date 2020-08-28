@@ -1,22 +1,25 @@
 package io.vgs.track.interceptor.transaction;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import org.junit.Test;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import io.vgs.track.BaseTest;
 import io.vgs.track.data.EntityTrackingData;
 import io.vgs.track.meta.NotTracked;
 import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
-import java.util.Date;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
 
 public class NotTrackedFieldTest extends BaseTest {
-
   @Test
   public void shouldNotTrackEntityFieldIfItDoesNotHaveTrackedAnnotation() {
     doInJpa(em -> {
@@ -60,7 +63,6 @@ public class NotTrackedFieldTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Client {
-
     @Id
     @GeneratedValue
     private Long id;
@@ -99,7 +101,6 @@ public class NotTrackedFieldTest extends BaseTest {
   @Entity
   @Trackable
   private static class Account {
-
     @Id
     @GeneratedValue
     private Long id;
@@ -127,7 +128,6 @@ public class NotTrackedFieldTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Passport {
-
     @Id
     @GeneratedValue
     private Long id;

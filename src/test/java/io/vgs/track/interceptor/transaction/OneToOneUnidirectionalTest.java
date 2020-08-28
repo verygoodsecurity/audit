@@ -1,16 +1,9 @@
 package io.vgs.track.interceptor.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import org.junit.Test;
 
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,7 +12,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
-import org.junit.jupiter.api.Test;
+
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 @SuppressWarnings("Duplicates")
 public class OneToOneUnidirectionalTest extends BaseTest {
@@ -40,7 +43,7 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     assertThat(inserts, hasSize(1));
     EntityTrackingFieldData client = testEntityTrackingListener.getInsertedField("address");
     assertThat(client.getOldValue(), is(nullValue()));
-    assertThat(client.getNewValue(), is(1L));
+    assertThat(client.getNewValue(), is(50L));
   }
 
   @Test
@@ -59,7 +62,7 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getUpdatedField("address");
     assertThat(address.getOldValue(), is(nullValue()));
-    assertThat(address.getNewValue(), is(1L));
+    assertThat(address.getNewValue(), is(50L));
   }
 
   @Test
@@ -91,15 +94,14 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     List<EntityTrackingData> updates = testEntityTrackingListener.getUpdates();
     assertThat(updates, hasSize(1));
     EntityTrackingFieldData address = testEntityTrackingListener.getUpdatedField("address");
-    assertThat(address.getOldValue(), is(1L));
-    assertThat(address.getNewValue(), is(2L));
+    assertThat(address.getOldValue(), is(50L));
+    assertThat(address.getNewValue(), is(51L));
   }
 
   @Entity
   @Trackable
   @Tracked
   public static class Client {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
@@ -142,7 +144,6 @@ public class OneToOneUnidirectionalTest extends BaseTest {
   @Trackable
   @Tracked
   public static class Passport {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")
@@ -172,7 +173,6 @@ public class OneToOneUnidirectionalTest extends BaseTest {
   @Trackable
   @Tracked
   public static class Address {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_seq")
     @SequenceGenerator(name = "address_seq", sequenceName = "address_seq")

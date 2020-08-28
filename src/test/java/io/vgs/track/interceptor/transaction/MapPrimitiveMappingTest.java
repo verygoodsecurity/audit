@@ -1,24 +1,28 @@
 package io.vgs.track.interceptor.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.google.common.collect.ImmutableMap;
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
+
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import org.junit.jupiter.api.Test;
+
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class MapPrimitiveMappingTest extends BaseTest {
 
@@ -42,7 +46,6 @@ public class MapPrimitiveMappingTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_seq")
     @SequenceGenerator(name = "employee_seq", sequenceName = "employee_seq")

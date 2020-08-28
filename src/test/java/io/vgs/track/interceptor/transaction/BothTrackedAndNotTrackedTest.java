@@ -1,38 +1,35 @@
 package io.vgs.track.interceptor.transaction;
 
+import org.junit.Test;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import io.vgs.track.BaseTest;
 import io.vgs.track.exception.IllegalTrackingAnnotationsException;
 import io.vgs.track.meta.NotTracked;
 import io.vgs.track.meta.Trackable;
 import io.vgs.track.meta.Tracked;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 public class BothTrackedAndNotTrackedTest extends BaseTest {
 
-  @Test
+  @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotations() {
-    Assertions.assertThrows(IllegalTrackingAnnotationsException.class, () ->
-        doInJpa(em -> {
-          Fruit fruit = new Fruit();
-          fruit.setColor("green");
-          em.persist(fruit);
-        })
-    );
+    doInJpa(em -> {
+      Fruit fruit = new Fruit();
+      fruit.setColor("green");
+      em.persist(fruit);
+    });
   }
 
-  @Test
+  @Test(expected = IllegalTrackingAnnotationsException.class)
   public void shouldThrowAnExceptionWhenFieldHasTrackedAndNotTrackedAnnotationsAndClassHasTracked() {
-    Assertions.assertThrows(IllegalTrackingAnnotationsException.class, () ->
-        doInJpa(em -> {
-          Shop shop = new Shop();
-          shop.setName("macys");
-          em.persist(shop);
-        })
-    );
+    doInJpa(em -> {
+      Shop shop = new Shop();
+      shop.setName("macys");
+      em.persist(shop);
+    });
   }
 
   @Override
@@ -46,7 +43,6 @@ public class BothTrackedAndNotTrackedTest extends BaseTest {
   @Entity
   @Trackable
   private static class Fruit {
-
     @Id
     @GeneratedValue
     private Long id;
@@ -76,7 +72,6 @@ public class BothTrackedAndNotTrackedTest extends BaseTest {
   @Trackable
   @Tracked
   private static class Shop {
-
     @Id
     @GeneratedValue
     private Long id;

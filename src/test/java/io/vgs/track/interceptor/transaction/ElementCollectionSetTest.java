@@ -1,30 +1,34 @@
 package io.vgs.track.interceptor.transaction;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-
 import com.google.common.collect.Sets;
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
+
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import org.junit.jupiter.api.Test;
+
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 
 @SuppressWarnings("Duplicates")
 public class ElementCollectionSetTest extends BaseTest {
-
   @Test
   public void save() {
     Set<String> names = Sets.newHashSet("Flash", "Batman", "Thor");
@@ -91,7 +95,6 @@ public class ElementCollectionSetTest extends BaseTest {
   @Entity
   @Trackable
   public static class Client {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
@@ -118,6 +121,7 @@ public class ElementCollectionSetTest extends BaseTest {
     }
 
   }
+
 
   @Override
   protected Class<?>[] entities() {

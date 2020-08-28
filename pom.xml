@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.vgs</groupId>
@@ -11,30 +12,16 @@
 
     <properties>
         <java.version>1.8</java.version>
-
-        <!-- VGS -->
-        <logging-starter.version>0.10.2</logging-starter.version>
-
-        <!-- Misc -->
-        <hibernate.version>5.2.18.Final</hibernate.version>
-        <p6spy.version>3.0.0</p6spy.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
+        <hibernate.version>4.3.11.Final</hibernate.version>
         <guava.version>24.1.1-jre</guava.version>
         <apache.commons.version>3.6</apache.commons.version>
         <h2.version>1.4.191</h2.version>
-        <lombok.version>1.18.12</lombok.version>
-        <lombok.encoding>UTF-8</lombok.encoding>
-
-        <!-- Testing -->
-        <junit.version>5.6.2</junit.version>
-        <hamcrest.version>2.2</hamcrest.version>
-
-        <!-- Plugins -->
-        <maven-compiler.version>3.8.0</maven-compiler.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <lombok-maven-plugin.version>1.18.12.0</lombok-maven-plugin.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <junit.version>4.12</junit.version>
+        <maven-compiler.version>3.1</maven-compiler.version>
+        <p6spy.version>3.0.0</p6spy.version>
+        <hamcrest.version>1.3</hamcrest.version>
     </properties>
 
     <distributionManagement>
@@ -43,7 +30,6 @@
             <name>AWS Release Repository</name>
             <url>s3://vault-dev-01-audits-01-artifact-19k6160zpr44j/software/release/</url>
         </repository>
-
         <snapshotRepository>
             <id>vault-http-snapshot</id>
             <name>AWS Snapshot Repository</name>
@@ -96,14 +82,7 @@
 
 
     <dependencies>
-        <!-- VGS -->
-        <dependency>
-            <groupId>com.verygood.security</groupId>
-            <artifactId>logging-core</artifactId>
-            <version>${logging-starter.version}</version>
-        </dependency>
-
-        <!-- Misc -->
+        <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -116,19 +95,21 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- Logging -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
+        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
 
+        <!-- Apache Common Collections -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -143,16 +124,9 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -168,6 +142,14 @@
             <artifactId>p6spy</artifactId>
             <version>${p6spy.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -180,51 +162,16 @@
             </extension>
         </extensions>
         <plugins>
+
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler.version}</version>
                 <configuration>
-                    <target>${maven.compiler.target}</target>
-                    <source>${maven.compiler.source}</source>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-sourcepath</arg>
-                        <arg>
-                            ${project.basedir}/src/main/java${path.separator}${project.basedir}/target/generated-sources/annotations${path.separator}/
-                        </arg>
-                    </compilerArgs>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>${lombok-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>delombok</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirectory>src/main/java</sourceDirectory>
-                            <addOutputDirectory>false</addOutputDirectory>
-                            <outputDirectory>${project.build.directory}/delombok</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
@@ -251,6 +198,10 @@
                     </commitMessages>
                 </configuration>
             </plugin>
+
         </plugins>
+
     </build>
+
+
 </project>

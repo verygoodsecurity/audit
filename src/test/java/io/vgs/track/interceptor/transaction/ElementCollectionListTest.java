@@ -1,30 +1,26 @@
 package io.vgs.track.interceptor.transaction;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+
 import com.google.common.collect.Lists;
-
-import org.junit.Test;
-
+import io.vgs.track.BaseTest;
+import io.vgs.track.data.EntityTrackingFieldData;
+import io.vgs.track.meta.Trackable;
+import io.vgs.track.meta.Tracked;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-
-import io.vgs.track.BaseTest;
-import io.vgs.track.data.EntityTrackingFieldData;
-import io.vgs.track.meta.Trackable;
-import io.vgs.track.meta.Tracked;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import org.junit.jupiter.api.Test;
 
 public class ElementCollectionListTest extends BaseTest {
 
@@ -93,6 +89,7 @@ public class ElementCollectionListTest extends BaseTest {
   @Entity
   @Trackable
   public static class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
     @SequenceGenerator(name = "client_seq", sequenceName = "client_seq")
@@ -122,7 +119,6 @@ public class ElementCollectionListTest extends BaseTest {
       nickNames.add(nickName);
     }
   }
-
 
   @Override
   protected Class<?>[] entities() {

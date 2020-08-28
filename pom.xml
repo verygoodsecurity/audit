@@ -6,7 +6,7 @@
 
     <groupId>io.vgs</groupId>
     <artifactId>vgs-track</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>2.1.0</version>
     <name>Track</name>
     <description>Track</description>
 

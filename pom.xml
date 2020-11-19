@@ -17,7 +17,7 @@
         <logging-starter.version>0.10.2</logging-starter.version>
 
         <!-- Misc -->
-        <hibernate.version>5.2.18.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <p6spy.version>3.0.0</p6spy.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <guava.version>24.1.1-jre</guava.version>

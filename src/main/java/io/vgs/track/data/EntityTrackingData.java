@@ -7,69 +7,70 @@ import java.util.List;
 import java.util.Objects;
 
 public class EntityTrackingData {
-  private final Serializable id;
-  private final Class clazz;
-  private final Action action;
-  private final List<EntityTrackingFieldData> entityTrackingFields = new ArrayList<>();
 
-  public EntityTrackingData(Serializable id, Class clazz, Action action) {
-    this.id = id;
-    this.clazz = clazz;
-    this.action = action;
-  }
+    private final Serializable id;
+    private final Class<?> clazz;
+    private final Action action;
+    private final List<EntityTrackingFieldData> entityTrackingFields = new ArrayList<>();
 
-  public void addOrUpdateEntityTrackingField(EntityTrackingFieldData fieldData, Object newValue) {
-    // if new field already exists then just refresh its newValue, otherwise add a new one
-    int indexOfExistentField = entityTrackingFields.indexOf(fieldData);
-    if (indexOfExistentField >= 0) {
-      EntityTrackingFieldData currentField = entityTrackingFields.get(indexOfExistentField);
-      currentField.setNewValue(newValue);
-    } else {
-      entityTrackingFields.add(fieldData);
+    public EntityTrackingData(final Serializable id, final Class<?> clazz, final Action action) {
+        this.id = id;
+        this.clazz = clazz;
+        this.action = action;
     }
-  }
 
-  public void addEntityTrackingField(EntityTrackingFieldData fieldData) {
-    this.entityTrackingFields.add(fieldData);
-  }
+    public void addOrUpdateEntityTrackingField(final EntityTrackingFieldData fieldData, final Object newValue) {
+        // if new field already exists then just refresh its newValue, otherwise add a
+        // new one
+        final int indexOfExistentField = entityTrackingFields.indexOf(fieldData);
+        if (indexOfExistentField >= 0) {
+            final EntityTrackingFieldData currentField = entityTrackingFields.get(indexOfExistentField);
+            currentField.setNewValue(newValue);
+        } else {
+            entityTrackingFields.add(fieldData);
+        }
+    }
 
-  public Serializable getId() {
-    return id;
-  }
+    public void addEntityTrackingField(final EntityTrackingFieldData fieldData) {
+        this.entityTrackingFields.add(fieldData);
+    }
 
-  public Class getClazz() {
-    return clazz;
-  }
+    public Serializable getId() {
+        return id;
+    }
 
-  public Action getAction() {
-    return action;
-  }
+    public Class<?> getClazz() {
+        return clazz;
+    }
 
-  public List<EntityTrackingFieldData> getEntityTrackingFields() {
-    return Collections.unmodifiableList(entityTrackingFields);
-  }
+    public Action getAction() {
+        return action;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof EntityTrackingData)) return false;
-    EntityTrackingData that = (EntityTrackingData) o;
-    return Objects.equals(this.id, that.id)
-        && Objects.equals(this.clazz, that.clazz);
-  }
+    public List<EntityTrackingFieldData> getEntityTrackingFields() {
+        return Collections.unmodifiableList(entityTrackingFields);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, clazz);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, clazz);
+    }
 
-  @Override
-  public String toString() {
-    return "EntityTrackingData{" +
-        "id=" + id +
-        ", clazz=" + clazz +
-        ", action=" + action +
-        ", entityTrackingFields=" + entityTrackingFields +
-        '}';
-  }
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof EntityTrackingData)) {
+            return false;
+        }
+        final EntityTrackingData that = (EntityTrackingData) o;
+        return Objects.equals(this.id, that.id) && Objects.equals(this.clazz, that.clazz);
+    }
+
+    @Override
+    public String toString() {
+        return "EntityTrackingData{" + "id=" + id + ", clazz=" + clazz + ", action=" + action
+                + ", entityTrackingFields=" + entityTrackingFields + '}';
+    }
 }

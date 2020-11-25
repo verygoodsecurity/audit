@@ -8,10 +8,7 @@ import org.hibernate.type.Type;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 // todo: not implemented yet
-@ThreadSafe
 public class EntityTrackingInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
 
   private EntityTrackingListener entityTrackingListener;

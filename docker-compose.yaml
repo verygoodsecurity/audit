@@ -2,9 +2,23 @@ version: '3.2'
 
 services:
   build-test:
-    image: maven:3.6.3-jdk-8-slim
+    image: maven:3.6-openjdk-8
     command: |
-      mvn -T 1.5C clean package -DfailIfNoTests=true -Dproject.version=${VERSION:-1.0-SNAPSHOT}
+      mvn -T 1.5C clean verify -DfailIfNoTests=true
+    working_dir: /app
+    environment:
+      AWS_PROFILE: dev/vault
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_REGION: us-west-2
+    volumes:
+      - .:/app/
+      - ~/.m2/:/root/.m2/
+      - ~/.aws/:/root/.aws/:ro
+
+  generate-site:
+    image: maven:3.6-openjdk-8
+    command: |
+      mvn -T 1.5C site
     working_dir: /app
     environment:
       AWS_PROFILE: dev/vault
@@ -16,7 +30,7 @@ services:
       - ~/.aws/:/root/.aws/:ro
 
   deploy-snapshot:
-    image: maven:3.6.3-jdk-8-slim
+    image: maven:3.6-openjdk-8
     command: |
       mvn deploy -DskipTests=true
     working_dir: /app
@@ -30,8 +44,8 @@ services:
       - ~/.aws/:/root/.aws/:ro
 
   deploy-release:
-    image: maven:3.6.3-jdk-8
-    command: mvn -B -e gitflow:release -DreleaseVersion=$CIRCLE_TAG -DpostReleaseGoals='deploy -DskipTests'
+    image: maven:3.6-openjdk-8
+    command: mvn release:prepare release:perform
     working_dir: /app
     environment:
       AWS_PROFILE: dev/vault

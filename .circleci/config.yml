@@ -20,7 +20,7 @@ parameters:
   cache_key_prefix:
     description: ""
     type: string
-    default: "tokenifier"
+    default: "track"
 
 commands:
   maven:

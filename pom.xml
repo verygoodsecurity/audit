@@ -6,7 +6,7 @@
 
     <groupId>io.vgs</groupId>
     <artifactId>vgs-track</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>3.0.0</version>
     <name>Track</name>
     <description>Track</description>
 
@@ -21,21 +21,21 @@
         <p6spy.version>3.0.0</p6spy.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <guava.version>24.1.1-jre</guava.version>
-        <apache.commons.version>3.6</apache.commons.version>
+        <apache.commons.version>3.11</apache.commons.version>
         <h2.version>1.4.191</h2.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <lombok.encoding>UTF-8</lombok.encoding>
 
         <!-- Testing -->
-        <junit.version>5.6.2</junit.version>
+        <junit.version>5.7.0</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
 
         <!-- Plugins -->
-        <maven-compiler.version>3.8.0</maven-compiler.version>
+        <maven-compiler.version>3.8.1</maven-compiler.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <lombok-maven-plugin.version>1.18.12.0</lombok-maven-plugin.version>
+        <lombok-maven-plugin.version>1.18.16.0</lombok-maven-plugin.version>
     </properties>
 
     <distributionManagement>
@@ -210,6 +210,11 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+            <plugin>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-maven-plugin</artifactId>
                 <version>${lombok-maven-plugin.version}</version>
@@ -230,7 +235,7 @@
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.8.0</version>
+                <version>1.15.0</version>
                 <configuration>
                     <verbose>true</verbose>
                     <versionDigitToIncrement>2</versionDigitToIncrement>

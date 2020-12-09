@@ -20,7 +20,7 @@
         <hibernate.version>5.2.18.Final</hibernate.version>
         <p6spy.version>3.0.0</p6spy.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <guava.version>24.1.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <apache.commons.version>3.11</apache.commons.version>
         <h2.version>1.4.191</h2.version>
         <lombok.version>1.18.16</lombok.version>

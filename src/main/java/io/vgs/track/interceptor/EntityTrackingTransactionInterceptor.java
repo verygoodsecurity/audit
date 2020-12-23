@@ -41,8 +41,8 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
   private static final String TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG = "The field %s should have either @Tracked or @NotTracked annotation";
   private static final String PERSISTENT_MAP_TRACKING_IS_NOT_SUPPORTED_YET = "PersistentMap tracking is not supported yet";
-  private final Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
   private EntityTrackingListener entityTrackingListener;
+  private final Map<EntityTrackingData, EntityTrackingData> changes = new HashMap<>();
 
   private static Class<?> getClassForHibernateObject(final Object object) {
     if (object instanceof HibernateProxy) {
@@ -62,13 +62,6 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   }
 
   @Override
-  public void onDelete(final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
-      final Type[] types) {
-    super.onDelete(entity, id, state, propertyNames, types);
-    createEntityTrackingData(id, entity, state, new Object[]{}, propertyNames, Action.DELETED);
-  }
-
-  @Override
   public boolean onFlushDirty(final Object entity, final Serializable id, final Object[] currentState,
       final Object[] previousState, final String[] propertyNames, final Type[] types) {
     super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
@@ -77,21 +70,10 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
   }
 
   @Override
-  public void beforeTransactionCompletion(final Transaction tx) {
-    if (!tx.isActive()) {
-      return;
-    }
-    try {
-      if (!changes.isEmpty()) {
-        if (entityTrackingListener != null) {
-          changes.values().forEach(entityTrackingListener::onEntityChanged);
-        } else {
-          LOG.warn("Couldn't track data, EntityTrackingListener is not provided");
-        }
-      }
-    } finally {
-      changes.clear();
-    }
+  public void onDelete(final Object entity, final Serializable id, final Object[] state, final String[] propertyNames,
+      final Type[] types) {
+    super.onDelete(entity, id, state, propertyNames, types);
+    createEntityTrackingData(id, entity, state, new Object[]{}, propertyNames, Action.DELETED);
   }
 
   @Override
@@ -289,6 +271,24 @@ public class EntityTrackingTransactionInterceptor extends EmptyInterceptor imple
       }
     }
     return null;
+  }
+
+  @Override
+  public void beforeTransactionCompletion(final Transaction tx) {
+    if (!tx.isActive()) {
+      return;
+    }
+    try {
+      if (!changes.isEmpty()) {
+        if (entityTrackingListener != null) {
+          changes.values().forEach(entityTrackingListener::onEntityChanged);
+        } else {
+          LOG.warn("Couldn't track data, EntityTrackingListener is not provided");
+        }
+      }
+    } finally {
+      changes.clear();
+    }
   }
 
   @Override

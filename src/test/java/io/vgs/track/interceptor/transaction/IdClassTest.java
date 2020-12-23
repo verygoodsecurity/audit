@@ -146,13 +146,6 @@ public class IdClassTest extends BaseTest {
     private Account account;
 
     @Override
-    public int hashCode() {
-      int result = user != null ? user.hashCode() : 0;
-      result = 31 * result + (account != null ? account.hashCode() : 0);
-      return result;
-    }
-
-    @Override
     public boolean equals(Object o) {
       if (this == o) {
         return true;
@@ -167,6 +160,13 @@ public class IdClassTest extends BaseTest {
         return false;
       }
       return account != null ? account.equals(that.account) : that.account == null;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = user != null ? user.hashCode() : 0;
+      result = 31 * result + (account != null ? account.hashCode() : 0);
+      return result;
     }
 
     public User getUser() {

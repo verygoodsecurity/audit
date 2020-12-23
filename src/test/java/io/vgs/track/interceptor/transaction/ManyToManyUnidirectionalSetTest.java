@@ -220,8 +220,10 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     }
 
     @Override
-    public int hashCode() {
-      return name != null ? name.hashCode() : 0;
+    public String toString() {
+      return "Project{" +
+          "id=" + id +
+          '}';
     }
 
     @Override
@@ -239,10 +241,8 @@ public class ManyToManyUnidirectionalSetTest extends BaseTest {
     }
 
     @Override
-    public String toString() {
-      return "Project{" +
-          "id=" + id +
-          '}';
+    public int hashCode() {
+      return name != null ? name.hashCode() : 0;
     }
   }
 }

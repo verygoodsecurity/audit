@@ -74,13 +74,6 @@ public class EmbeddedIdTest extends BaseTest {
     }
 
     @Override
-    public int hashCode() {
-      int result = userName != null ? userName.hashCode() : 0;
-      result = 31 * result + (departmentNr != null ? departmentNr.hashCode() : 0);
-      return result;
-    }
-
-    @Override
     public boolean equals(Object o) {
       if (this == o) {
         return true;
@@ -95,6 +88,13 @@ public class EmbeddedIdTest extends BaseTest {
         return false;
       }
       return departmentNr != null ? departmentNr.equals(userId.departmentNr) : userId.departmentNr == null;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = userName != null ? userName.hashCode() : 0;
+      result = 31 * result + (departmentNr != null ? departmentNr.hashCode() : 0);
+      return result;
     }
   }
 }

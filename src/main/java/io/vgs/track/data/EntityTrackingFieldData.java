@@ -31,11 +31,6 @@ public class EntityTrackingFieldData {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(name);
-  }
-
-  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -45,6 +40,11 @@ public class EntityTrackingFieldData {
     }
     final EntityTrackingFieldData that = (EntityTrackingFieldData) o;
     return Objects.equals(this.name, that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
   }
 
   @Override

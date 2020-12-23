@@ -86,6 +86,14 @@ public class OneToManyBidirectionalSetTest extends BaseTest {
     assertThat(address.getNewValue(), is(1L));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        Car.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -145,13 +153,5 @@ public class OneToManyBidirectionalSetTest extends BaseTest {
     public void setCars(Set<Car> cars) {
       this.cars = cars;
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        Car.class,
-        Address.class
-    };
   }
 }

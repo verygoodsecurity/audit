@@ -53,6 +53,14 @@ public class OneToManyBidirectionalListCascadeTest extends BaseTest {
     assertThat(address.getNewValue(), is(1L));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        Car.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -118,13 +126,5 @@ public class OneToManyBidirectionalListCascadeTest extends BaseTest {
       cars.add(car);
       car.setAddress(this);
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        Car.class,
-        Address.class
-    };
   }
 }

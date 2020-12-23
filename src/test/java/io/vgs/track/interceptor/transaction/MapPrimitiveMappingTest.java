@@ -38,6 +38,13 @@ public class MapPrimitiveMappingTest extends BaseTest {
     assertThat(config.getNewValue(), is(store));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class<?>[]{
+        Employee.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -66,12 +73,5 @@ public class MapPrimitiveMappingTest extends BaseTest {
     public void setConfig(Map<String, Integer> config) {
       this.config = config;
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class<?>[]{
-        Employee.class
-    };
   }
 }

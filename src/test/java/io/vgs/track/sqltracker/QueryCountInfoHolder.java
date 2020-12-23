@@ -1,7 +1,8 @@
 package io.vgs.track.sqltracker;
 
 public class QueryCountInfoHolder {
-  private static ThreadLocal<QueryCountInfo> queryInfoHolder = new ThreadLocal<QueryCountInfo>() {
+
+  private static final ThreadLocal<QueryCountInfo> queryInfoHolder = new ThreadLocal<QueryCountInfo>() {
     @Override
     protected QueryCountInfo initialValue() {
       return new QueryCountInfo();

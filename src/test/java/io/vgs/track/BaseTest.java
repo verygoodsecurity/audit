@@ -27,10 +27,9 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseTest {
 
+  protected TestEntityStateEntityTrackingListener testEntityTrackingListener = new TestEntityStateEntityTrackingListener();
   private SessionFactory sf;
   private EntityManagerFactory emf;
-
-  protected TestEntityStateEntityTrackingListener testEntityTrackingListener = new TestEntityStateEntityTrackingListener();
 
   @BeforeEach
   public void init() {
@@ -108,7 +107,8 @@ public abstract class BaseTest {
 
   protected void addListener(EntityManager entityManager) {
     Session session = (Session) entityManager.getDelegate();
-    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) session).getInterceptor();
+    EntityTrackingListenerAware interceptor = (EntityTrackingListenerAware) ((SessionImplementor) session)
+        .getInterceptor();
     interceptor.setEntityTrackingListener(testEntityTrackingListener);
   }
 

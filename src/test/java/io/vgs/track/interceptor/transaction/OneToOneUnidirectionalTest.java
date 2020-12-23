@@ -95,6 +95,15 @@ public class OneToOneUnidirectionalTest extends BaseTest {
     assertThat(address.getNewValue(), is(2L));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        Client.class,
+        Passport.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -186,16 +195,6 @@ public class OneToOneUnidirectionalTest extends BaseTest {
       this.id = id;
     }
 
-  }
-
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        Client.class,
-        Passport.class,
-        Address.class
-    };
   }
 
 }

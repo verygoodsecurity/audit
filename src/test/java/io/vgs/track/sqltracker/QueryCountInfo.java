@@ -1,6 +1,7 @@
 package io.vgs.track.sqltracker;
 
 public class QueryCountInfo {
+
   private int selectCount;
   private int insertCount;
   private int updateCount;

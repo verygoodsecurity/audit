@@ -32,13 +32,20 @@ public class EmbeddedIdTest extends BaseTest {
     assertThat(insertData.getId(), is(userId));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        User.class
+    };
+  }
+
   @Entity
   @Tracked
   @Trackable
   private static class User {
 
     @EmbeddedId
-    private UserId id;
+    private final UserId id;
 
     private String name;
 
@@ -55,22 +62,22 @@ public class EmbeddedIdTest extends BaseTest {
     }
   }
 
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        User.class
-    };
-  }
-
   @Embeddable
   private static class UserId implements Serializable {
 
-    private String userName;
-    private String departmentNr;
+    private final String userName;
+    private final String departmentNr;
 
     public UserId(String userName, String departmentNr) {
       this.userName = userName;
       this.departmentNr = departmentNr;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = userName != null ? userName.hashCode() : 0;
+      result = 31 * result + (departmentNr != null ? departmentNr.hashCode() : 0);
+      return result;
     }
 
     @Override
@@ -88,13 +95,6 @@ public class EmbeddedIdTest extends BaseTest {
         return false;
       }
       return departmentNr != null ? departmentNr.equals(userId.departmentNr) : userId.departmentNr == null;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = userName != null ? userName.hashCode() : 0;
-      result = 31 * result + (departmentNr != null ? departmentNr.hashCode() : 0);
-      return result;
     }
   }
 }

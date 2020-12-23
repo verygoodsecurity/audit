@@ -116,6 +116,15 @@ public class OneToOneBidirectionalTest extends BaseTest {
     assertThat(clientOfSecondAddress.getNewValue(), is(1L));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        Client.class,
+        Passport.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -218,15 +227,5 @@ public class OneToOneBidirectionalTest extends BaseTest {
     public void setClient(Client client) {
       this.client = client;
     }
-  }
-
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        Client.class,
-        Passport.class,
-        Address.class
-    };
   }
 }

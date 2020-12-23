@@ -88,6 +88,13 @@ public class ElementCollectionSetTest extends BaseTest {
     assertThat(actualNewValue, containsInAnyOrder("Flash", "Batman", "Thor", "Iron Man", "Hulk"));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class<?>[]{
+        Client.class
+    };
+  }
+
   @Entity
   @Trackable
   public static class Client {
@@ -117,12 +124,5 @@ public class ElementCollectionSetTest extends BaseTest {
       this.nickNames = nickNames;
     }
 
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class<?>[]{
-        Client.class
-    };
   }
 }

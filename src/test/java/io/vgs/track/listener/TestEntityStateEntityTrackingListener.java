@@ -1,21 +1,20 @@
 package io.vgs.track.listener;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
+import io.vgs.track.data.Action;
+import io.vgs.track.data.EntityTrackingData;
+import io.vgs.track.data.EntityTrackingFieldData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import io.vgs.track.data.Action;
-import io.vgs.track.data.EntityTrackingData;
-import io.vgs.track.data.EntityTrackingFieldData;
-
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-
 public class TestEntityStateEntityTrackingListener implements EntityTrackingListener {
 
-  private static List<EntityTrackingData> changes = new ArrayList<>();
+  private static final List<EntityTrackingData> changes = new ArrayList<>();
 
   public List<EntityTrackingData> getInserts() {
     return changes.stream()

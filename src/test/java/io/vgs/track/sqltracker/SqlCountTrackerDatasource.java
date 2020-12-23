@@ -5,11 +5,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-
 import javax.sql.DataSource;
 
 public class SqlCountTrackerDatasource implements DataSource {
-  private DataSource realDataSource;
+
+  private final DataSource realDataSource;
 
   public SqlCountTrackerDatasource(DataSource realDataSource) {
     this.realDataSource = realDataSource;

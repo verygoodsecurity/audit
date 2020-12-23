@@ -42,6 +42,15 @@ public class IdClassTest extends BaseTest {
     assertThat(inserts.size(), is(2));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        User.class,
+        Account.class,
+        UserAccount.class
+    };
+  }
+
   @Entity
   @Tracked
   @Trackable
@@ -137,6 +146,13 @@ public class IdClassTest extends BaseTest {
     private Account account;
 
     @Override
+    public int hashCode() {
+      int result = user != null ? user.hashCode() : 0;
+      result = 31 * result + (account != null ? account.hashCode() : 0);
+      return result;
+    }
+
+    @Override
     public boolean equals(Object o) {
       if (this == o) {
         return true;
@@ -151,13 +167,6 @@ public class IdClassTest extends BaseTest {
         return false;
       }
       return account != null ? account.equals(that.account) : that.account == null;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = user != null ? user.hashCode() : 0;
-      result = 31 * result + (account != null ? account.hashCode() : 0);
-      return result;
     }
 
     public User getUser() {
@@ -175,15 +184,5 @@ public class IdClassTest extends BaseTest {
     public void setAccount(Account account) {
       this.account = account;
     }
-  }
-
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        User.class,
-        Account.class,
-        UserAccount.class
-    };
   }
 }

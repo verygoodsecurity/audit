@@ -70,6 +70,8 @@ public class ReplaceTrackedFieldTest extends BaseTest {
 
     @Tracked
     private String tracked;
+    @Tracked(replace = false)
+    private String anotherTracked;
 
     public String getTracked() {
       return tracked;
@@ -86,9 +88,6 @@ public class ReplaceTrackedFieldTest extends BaseTest {
     public void setAnotherTracked(String anotherTracked) {
       this.anotherTracked = anotherTracked;
     }
-
-    @Tracked(replace = false)
-    private String anotherTracked;
 
     public Integer getVersion() {
       return version;

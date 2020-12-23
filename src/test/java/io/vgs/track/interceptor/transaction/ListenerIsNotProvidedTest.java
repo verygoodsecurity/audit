@@ -28,15 +28,15 @@ public class ListenerIsNotProvidedTest extends BaseTest {
   }
 
   @Override
-  protected void addListener(EntityManager entityManager) {
-    // NOP
-  }
-
-  @Override
   protected Class<?>[] entities() {
     return new Class<?>[]{
         Client.class
     };
+  }
+
+  @Override
+  protected void addListener(EntityManager entityManager) {
+    // NOP
   }
 
   @Entity

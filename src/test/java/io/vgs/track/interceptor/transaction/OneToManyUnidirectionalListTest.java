@@ -69,6 +69,14 @@ public class OneToManyUnidirectionalListTest extends BaseTest {
     assertThat(((Collection<?>) cars.getNewValue()), containsInAnyOrder(1L));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class[]{
+        Car.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -117,13 +125,5 @@ public class OneToManyUnidirectionalListTest extends BaseTest {
     public void setCars(List<Car> cars) {
       this.cars = cars;
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class[]{
-        Car.class,
-        Address.class
-    };
   }
 }

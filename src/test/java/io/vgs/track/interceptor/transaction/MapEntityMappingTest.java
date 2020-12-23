@@ -49,6 +49,14 @@ public class MapEntityMappingTest extends BaseTest {
     assertThat(carMapField, is(nullValue()));
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class<?>[]{
+        Car.class,
+        Address.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -119,13 +127,5 @@ public class MapEntityMappingTest extends BaseTest {
     public void setCarMap(Map<String, Car> carMap) {
       this.carMap = carMap;
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class<?>[]{
-        Car.class,
-        Address.class
-    };
   }
 }

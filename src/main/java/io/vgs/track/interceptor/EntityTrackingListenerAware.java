@@ -4,5 +4,5 @@ import io.vgs.track.listener.EntityTrackingListener;
 
 public interface EntityTrackingListenerAware {
 
-    void setEntityTrackingListener(EntityTrackingListener entityTrackingListener);
+  void setEntityTrackingListener(EntityTrackingListener entityTrackingListener);
 }

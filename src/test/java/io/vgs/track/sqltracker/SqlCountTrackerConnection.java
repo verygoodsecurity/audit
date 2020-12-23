@@ -21,9 +21,9 @@ import java.util.concurrent.Executor;
 
 public class SqlCountTrackerConnection implements Connection {
 
-  private Connection realConnection;
+  private final Connection realConnection;
 
-  private QueryHandler queryHandler = new QueryCountInfoHandler();
+  private final QueryHandler queryHandler = new QueryCountInfoHandler();
 
   SqlCountTrackerConnection(Connection realConnection) {
     this.realConnection = realConnection;
@@ -31,13 +31,19 @@ public class SqlCountTrackerConnection implements Connection {
 
   // Decorated
 
-  @Override
-  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+  private void handleSql(String sql) {
+    queryHandler.handleSql(sql);
+  }  @Override
+  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+      throws SQLException {
     handleSql(sql);
     return realConnection.prepareStatement(sql, resultSetType, resultSetConcurrency);
   }
 
   @Override
+  public Statement createStatement() throws SQLException {
+    return realConnection.createStatement();
+  }  @Override
   public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
     handleSql(sql);
     return realConnection.prepareCall(sql, resultSetType, resultSetConcurrency);
@@ -61,18 +67,24 @@ public class SqlCountTrackerConnection implements Connection {
     return realConnection.nativeSQL(sql);
   }
 
-  private void handleSql(String sql) {
-    queryHandler.handleSql(sql);
+  @Override
+  public <T> T unwrap(Class<T> iface) throws SQLException {
+    return realConnection.unwrap(iface);
   }
 
   @Override
-  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+  public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    return realConnection.isWrapperFor(iface);
+  }  @Override
+  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
+      int resultSetHoldability) throws SQLException {
     handleSql(sql);
     return realConnection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
   }
 
   @Override
-  public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+  public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+      int resultSetHoldability) throws SQLException {
     handleSql(sql);
     return realConnection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
   }
@@ -97,10 +109,7 @@ public class SqlCountTrackerConnection implements Connection {
 
   // ---------------------------------------------------------------------
 
-  @Override
-  public Statement createStatement() throws SQLException {
-    return realConnection.createStatement();
-  }
+
 
   @Override
   public boolean getAutoCommit() throws SQLException {
@@ -223,7 +232,8 @@ public class SqlCountTrackerConnection implements Connection {
   }
 
   @Override
-  public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+  public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+      throws SQLException {
     return realConnection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
   }
 
@@ -307,13 +317,7 @@ public class SqlCountTrackerConnection implements Connection {
     return realConnection.getNetworkTimeout();
   }
 
-  @Override
-  public <T> T unwrap(Class<T> iface) throws SQLException {
-    return realConnection.unwrap(iface);
-  }
 
-  @Override
-  public boolean isWrapperFor(Class<?> iface) throws SQLException {
-    return realConnection.isWrapperFor(iface);
-  }
+
+
 }

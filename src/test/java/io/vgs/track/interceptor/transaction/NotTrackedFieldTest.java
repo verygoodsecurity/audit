@@ -56,6 +56,15 @@ public class NotTrackedFieldTest extends BaseTest {
     });
   }
 
+  @Override
+  protected Class<?>[] entities() {
+    return new Class<?>[]{
+        Client.class,
+        Account.class,
+        Passport.class
+    };
+  }
+
   @Entity
   @Trackable
   @Tracked
@@ -85,15 +94,6 @@ public class NotTrackedFieldTest extends BaseTest {
     public void setName(String name) {
       this.name = name;
     }
-  }
-
-  @Override
-  protected Class<?>[] entities() {
-    return new Class<?>[]{
-        Client.class,
-        Account.class,
-        Passport.class
-    };
   }
 
   @Entity

@@ -140,7 +140,8 @@ public class PrimitiveFieldsTest extends BaseTest {
       em.persist(entity);
     });
 
-    EntityTrackingFieldData fieldWithDefaultValue = testEntityTrackingListener.getInsertedField("fieldWithDefaultValue");
+    EntityTrackingFieldData fieldWithDefaultValue = testEntityTrackingListener
+        .getInsertedField("fieldWithDefaultValue");
     assertThat(fieldWithDefaultValue.getOldValue(), is(nullValue()));
     assertThat(fieldWithDefaultValue.getNewValue(), is(100));
   }

@@ -15,12 +15,6 @@ setup-env: &setup-env
     name: Setup AWS access
     command: ./.circleci/setup-aws-config.sh
 
-save-maven-cache: &save-maven-cache
-  save_cache:
-    key: track-{{ checksum "pom.xml" }}
-    paths:
-      - ~/.m2
-
 jobs:
   build-test:
     machine: true
@@ -33,7 +27,10 @@ jobs:
           key: track-{{ checksum "pom.xml" }}
       - <<: *setup-env
       - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
-      - <<: *save-maven-cache
+      - save_cache:
+          key: track-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
       - persist_to_workspace:
           root: .
           paths: "*"

@@ -17,11 +17,15 @@ parameters:
     description: "The AWS region where the S3 buckets with Maven artifacts are."
     type: string
     default: "us-west-2"
+  test_results_dir:
+    description: "The directory to put test results into."
+    type: string
+    default: "/tmp/test-results"
 
 job-defaults: &job-defaults
   working_directory: << pipeline.parameters.working_directory >>
   environment:
-    - TEST_RESULTS: /tmp/test-results
+    - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
     - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
     - AWS_REGION: << pipeline.parameters.aws_region >>
     - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
@@ -40,7 +44,7 @@ jobs:
     machine: true
     working_directory: << pipeline.parameters.working_directory >>
     environment:
-      TEST_RESULTS: /tmp/test-results
+      TEST_RESULTS: << pipeline.parameters.test_results_dir >>
     steps:
       - checkout
       - restore_cache:

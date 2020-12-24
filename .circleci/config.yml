@@ -13,13 +13,17 @@ parameters:
     description: "The VGS profile for accessing AWS to find the S3 buckets with Maven artifacts."
     type: string
     default: "dev/vault"
+  aws_region:
+    description: "The AWS region where the S3 buckets with Maven artifacts are."
+    type: string
+    default: "us-west-2"
 
 job-defaults: &job-defaults
   working_directory: << pipeline.parameters.working_directory >>
   environment:
     - TEST_RESULTS: /tmp/test-results
-    - AWS_DEFAULT_REGION: us-west-2
-    - AWS_REGION: us-west-2
+    - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
+    - AWS_REGION: << pipeline.parameters.aws_region >>
     - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
     - AWS_PROFILE: << pipeline.parameters.aws_profile >>
 

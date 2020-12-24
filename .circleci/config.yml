@@ -22,15 +22,6 @@ parameters:
     type: string
     default: "/tmp/test-results"
 
-job-defaults: &job-defaults
-  working_directory: << pipeline.parameters.working_directory >>
-  environment:
-    - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
-    - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
-    - AWS_REGION: << pipeline.parameters.aws_region >>
-    - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
-    - AWS_PROFILE: << pipeline.parameters.aws_profile >>
-
 commands: 
   setup_env:
     description: "Set up AWS access"
@@ -62,7 +53,13 @@ jobs:
   deploy-snapshot:
     machine:
       enabled: true
-    <<: *job-defaults
+    working_directory: << pipeline.parameters.working_directory >>
+    environment:
+      - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
+      - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
+      - AWS_REGION: << pipeline.parameters.aws_region >>
+      - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
+      - AWS_PROFILE: << pipeline.parameters.aws_profile >>
     steps:
       - attach_workspace:
           at: << pipeline.parameters.working_directory >>
@@ -77,7 +74,13 @@ jobs:
   deploy-release:
     machine:
       enabled: true
-    <<: *job-defaults
+    working_directory: << pipeline.parameters.working_directory >>
+    environment:
+      - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
+      - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
+      - AWS_REGION: << pipeline.parameters.aws_region >>
+      - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
+      - AWS_PROFILE: << pipeline.parameters.aws_profile >>
     steps:
       - attach_workspace:
           at: << pipeline.parameters.working_directory >>
@@ -96,7 +99,13 @@ jobs:
             git push origin master
 
   validate-production:
-    <<: *job-defaults
+    working_directory: << pipeline.parameters.working_directory >>
+    environment:
+      - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
+      - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
+      - AWS_REGION: << pipeline.parameters.aws_region >>
+      - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
+      - AWS_PROFILE: << pipeline.parameters.aws_profile >>
     docker:
       - image: docker:17.05.0-ce-git
     steps:
@@ -108,7 +117,13 @@ jobs:
             docker run -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN quay.io/verygoodsecurity/ghch:$GHCH_VERSION validate --repo-name verygoodsecurity/$CIRCLE_PROJECT_REPONAME --tag-name $CIRCLE_TAG --tag-regex "(.*)"
 
   complete-production:
-    <<: *job-defaults
+    working_directory: << pipeline.parameters.working_directory >>
+    environment:
+      - TEST_RESULTS: << pipeline.parameters.test_results_dir >>
+      - AWS_DEFAULT_REGION: << pipeline.parameters.aws_region >>
+      - AWS_REGION: << pipeline.parameters.aws_region >>
+      - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
+      - AWS_PROFILE: << pipeline.parameters.aws_profile >>
     docker:
       - image: docker:17.05.0-ce-git
     steps:

@@ -30,10 +30,6 @@ persist-workspace: &persist-workspace
     root: .
     paths: "*"
 
-attach-workspace: &attach-workspace
-  attach_workspace:
-    at: *working_directory
-
 jobs:
   build-test:
     machine: true
@@ -53,7 +49,8 @@ jobs:
       enabled: true
     <<: *job-defaults
     steps:
-      - *attach-workspace
+      - attach_workspace:
+          at: *working_directory
       - <<: *setup-env
       - run:
           name: Deploy snapshot
@@ -67,7 +64,8 @@ jobs:
       enabled: true
     <<: *job-defaults
     steps:
-      - *attach-workspace
+      - attach_workspace:
+          at: *working_directory
       - <<: *setup-env
       - add_ssh_keys:
           fingerprints:

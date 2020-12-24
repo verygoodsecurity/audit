@@ -10,10 +10,13 @@ job-defaults: &job-defaults
     - AWS_ACCOUNT_ID: "883127560329"
     - AWS_PROFILE: dev/vault
 
-setup-env: &setup-env
-  run:
-    name: Setup AWS access
-    command: ./.circleci/setup-aws-config.sh
+commands: 
+  setup_env:
+    description: "Set up AWS access"
+    steps:
+      - run:
+          name: "Setup AWS access"
+          command: "./.circleci/setup-aws-config.sh"
 
 jobs:
   build-test:
@@ -25,7 +28,7 @@ jobs:
       - checkout
       - restore_cache:
           key: track-{{ checksum "pom.xml" }}
-      - <<: *setup-env
+      - setup_env
       - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
       - save_cache:
           key: track-{{ checksum "pom.xml" }}
@@ -42,7 +45,7 @@ jobs:
     steps:
       - attach_workspace:
           at: *working_directory
-      - <<: *setup-env
+      - setup_env
       - run:
           name: Deploy snapshot
           command: |
@@ -57,7 +60,7 @@ jobs:
     steps:
       - attach_workspace:
           at: *working_directory
-      - <<: *setup-env
+      - setup_env
       - add_ssh_keys:
           fingerprints:
             - "41:9b:7b:a7:32:3e:c4:da:69:4e:c6:64:9a:5a:12:78"

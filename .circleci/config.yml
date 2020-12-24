@@ -9,6 +9,10 @@ parameters:
     description: "The AWS account ID."
     type: string
     default: "883127560329"
+  aws_profile:
+    description: "The VGS profile for accessing AWS to find the S3 buckets with Maven artifacts."
+    type: string
+    default: "dev/vault"
 
 job-defaults: &job-defaults
   working_directory: << pipeline.parameters.working_directory >>
@@ -17,7 +21,7 @@ job-defaults: &job-defaults
     - AWS_DEFAULT_REGION: us-west-2
     - AWS_REGION: us-west-2
     - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
-    - AWS_PROFILE: dev/vault
+    - AWS_PROFILE: << pipeline.parameters.aws_profile >>
 
 commands: 
   setup_env:

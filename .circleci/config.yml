@@ -1,8 +1,13 @@
 version: 2.1
 
+parameters:
+  working_directory:
+    description: "The working directory for building the app."
+    type: string
+    default: "~/app"
+
 job-defaults: &job-defaults
-  working_directory: &working_directory
-                       ~/app
+  working_directory: << pipeline.parameters.working_directory >>
   environment:
     - TEST_RESULTS: /tmp/test-results
     - AWS_DEFAULT_REGION: us-west-2
@@ -21,7 +26,7 @@ commands:
 jobs:
   build-test:
     machine: true
-    working_directory: ~/app
+    working_directory: << pipeline.parameters.working_directory >>
     environment:
       TEST_RESULTS: /tmp/test-results
     steps:
@@ -44,7 +49,7 @@ jobs:
     <<: *job-defaults
     steps:
       - attach_workspace:
-          at: *working_directory
+          at: << pipeline.parameters.working_directory >>
       - setup_env
       - run:
           name: Deploy snapshot
@@ -59,7 +64,7 @@ jobs:
     <<: *job-defaults
     steps:
       - attach_workspace:
-          at: *working_directory
+          at: << pipeline.parameters.working_directory >>
       - setup_env
       - add_ssh_keys:
           fingerprints:

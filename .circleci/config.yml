@@ -25,11 +25,6 @@ restore-maven-cache: &restore-maven-cache
   restore_cache:
     key: track-{{ checksum "pom.xml" }}
 
-persist-workspace: &persist-workspace
-  persist_to_workspace:
-    root: .
-    paths: "*"
-
 jobs:
   build-test:
     machine: true
@@ -42,7 +37,9 @@ jobs:
       - <<: *setup-env
       - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
       - <<: *save-maven-cache
-      - <<: *persist-workspace
+      - persist_to_workspace:
+          root: .
+          paths: "*"
 
   deploy-snapshot:
     machine:

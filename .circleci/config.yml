@@ -5,6 +5,10 @@ parameters:
     description: "The working directory for building the app."
     type: string
     default: "~/app"
+  aws_account_id:
+    description: "The AWS account ID."
+    type: string
+    default: "883127560329"
 
 job-defaults: &job-defaults
   working_directory: << pipeline.parameters.working_directory >>
@@ -12,7 +16,7 @@ job-defaults: &job-defaults
     - TEST_RESULTS: /tmp/test-results
     - AWS_DEFAULT_REGION: us-west-2
     - AWS_REGION: us-west-2
-    - AWS_ACCOUNT_ID: "883127560329"
+    - AWS_ACCOUNT_ID: << pipeline.parameters.aws_account_id >>
     - AWS_PROFILE: dev/vault
 
 commands: 

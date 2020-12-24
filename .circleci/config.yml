@@ -21,10 +21,6 @@ save-maven-cache: &save-maven-cache
     paths:
       - ~/.m2
 
-restore-maven-cache: &restore-maven-cache
-  restore_cache:
-    key: track-{{ checksum "pom.xml" }}
-
 jobs:
   build-test:
     machine: true
@@ -33,7 +29,8 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
-      - <<: *restore-maven-cache
+      - restore_cache:
+          key: track-{{ checksum "pom.xml" }}
       - <<: *setup-env
       - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
       - <<: *save-maven-cache

@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public class Utils {
 
+  private static final ComparableComparator COMPARABLE_COMPARATOR = new ComparableComparator();
+
   private Utils() {
 
   }
@@ -16,7 +18,7 @@ public class Utils {
 
   private static boolean compareEquals(Object first, Object second) {
     return first instanceof Comparable && second instanceof Comparable
-        && Objects.compare(first, second, new ComparableComparator()) == 0;
+        && Objects.compare(first, second, COMPARABLE_COMPARATOR) == 0;
   }
 
   //return true when: first = null, second = empty collection or vice versa
@@ -24,6 +26,10 @@ public class Utils {
     return (first == null && second.isEmpty()) || (second == null && first.isEmpty());
   }
 
+  /**
+   * A comparator that compares {@link Comparable} objects.
+   */
+  // TODO: Figure out how to describe the generic type properly.
   private static class ComparableComparator implements Comparator<Object> {
 
     @Override

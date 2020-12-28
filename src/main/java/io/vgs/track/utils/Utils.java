@@ -16,7 +16,7 @@ public class Utils {
 
   private static boolean compareEquals(Object first, Object second) {
     return first instanceof Comparable && second instanceof Comparable
-        && Objects.compare(first, second, new Foo()) == 0;
+        && Objects.compare(first, second, new ComparableComparator()) == 0;
   }
 
   //return true when: first = null, second = empty collection or vice versa
@@ -24,7 +24,7 @@ public class Utils {
     return (first == null && second.isEmpty()) || (second == null && first.isEmpty());
   }
 
-  private static class Foo implements Comparator<Object> {
+  private static class ComparableComparator implements Comparator<Object> {
 
     @Override
     public int compare(final Object o1, final Object o2) {

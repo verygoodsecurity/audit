@@ -29,10 +29,7 @@ commands:
       - run:
           name: "Setup AWS access"
           command: "./.circleci/setup-aws-config.sh"
-
-jobs:
   configure-aws:
-    machine: {}
     steps:
       - run:
           name: "Create AWS configuration directory."
@@ -53,7 +50,6 @@ jobs:
             source_profile = default
             " >> ~/.aws/credentials
   configure-maven:
-    machine: {}
     steps:
       - run:
           name: "Create Maven configuration directory."
@@ -182,6 +178,8 @@ jobs:
               </profiles>
             </settings>
             " > ~/.m2/settings.xml
+
+jobs:
   build-test:
     machine: true
     working_directory: << pipeline.parameters.working_directory >>
@@ -192,6 +190,7 @@ jobs:
       - restore_cache:
           key: track-{{ checksum "pom.xml" }}
       - setup_env
+      - configure-maven: {}
       - run: VERSION=$CIRCLE_SHA1 docker-compose run build-test
       - save_cache:
           key: track-{{ checksum "pom.xml" }}
@@ -288,29 +287,25 @@ jobs:
 workflows:
   build-test-and-deploy:
     jobs:
-      - configure-maven:
+      - build-test:
           context:
             - "artifact-publisher"
             - "artifactory"
-      - build-test:
-          context: artifact-publisher
-          requires:
-            - "configure-maven"
           filters:
             tags:
               only: /.*/
       - deploy-snapshot:
-          context: artifact-publisher
+          context:
+            - "artifact-publisher"
           requires:
-            - "configure-maven"
             - build-test
           filters:
             branches:
               only: master
       - deploy-release:
-          context: artifact-publisher
+          context:
+            - "artifact-publisher"
           requires:
-            - "configure-maven"
             - build-test
             - validate-production
           filters:
@@ -319,14 +314,16 @@ workflows:
             branches:
               ignore: /.*/
       - validate-production:
-          context: ghch
+          context:
+            - "ghch"
           filters:
             tags:
               only: /^\d+\.\d+\.\d+(?:-\w+){0,1}$/
             branches:
               ignore: /.*/
       - complete-production:
-          context: ghch
+          context:
+            - "ghch"
           requires:
             - deploy-release
           filters:

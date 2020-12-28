@@ -181,7 +181,7 @@ jobs:
                 </profile>
               </profiles>
             </settings>
-            " >> ~/.m2/settings.xml
+            " > ~/.m2/settings.xml
   build-test:
     machine: true
     working_directory: << pipeline.parameters.working_directory >>

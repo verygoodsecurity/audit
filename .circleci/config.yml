@@ -288,14 +288,21 @@ jobs:
 workflows:
   build-test-and-deploy:
     jobs:
+      - configure-maven:
+          context:
+            - "artifact-publisher"
+            - "artifactory"
       - build-test:
           context: artifact-publisher
+          requires:
+            - "configure-maven"
           filters:
             tags:
               only: /.*/
       - deploy-snapshot:
           context: artifact-publisher
           requires:
+            - "configure-maven"
             - build-test
           filters:
             branches:
@@ -303,6 +310,7 @@ workflows:
       - deploy-release:
           context: artifact-publisher
           requires:
+            - "configure-maven"
             - build-test
             - validate-production
           filters:

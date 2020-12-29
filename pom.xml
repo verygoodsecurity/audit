@@ -6,7 +6,7 @@
 
     <groupId>io.vgs</groupId>
     <artifactId>vgs-track</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>Track</name>
     <description>JPA annotations for tracking database changes.</description>
 
@@ -117,7 +117,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -141,7 +140,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.0-jre</version>
+            <version>30.1-jre</version>
             <scope>test</scope>
         </dependency>
         <dependency>

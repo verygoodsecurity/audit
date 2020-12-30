@@ -1,11 +1,10 @@
 package io.vgs.track.data;
 
-import com.google.common.base.Objects;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class EntityTrackingData {
   private final Serializable id;
@@ -55,13 +54,13 @@ public class EntityTrackingData {
     if (this == o) return true;
     if (!(o instanceof EntityTrackingData)) return false;
     EntityTrackingData that = (EntityTrackingData) o;
-    return Objects.equal(this.id, that.id)
-        && Objects.equal(this.clazz, that.clazz);
+    return Objects.equals(this.id, that.id)
+        && Objects.equals(this.clazz, that.clazz);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, clazz);
+    return Objects.hash(id, clazz);
   }
 
   @Override

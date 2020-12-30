@@ -1,75 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.vgs</groupId>
     <artifactId>vgs-track</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>Track</name>
-    <description>Track</description>
+    <description>JPA annotations for tracking database changes.</description>
 
     <properties>
-        <java.version>1.8</java.version>
-
-        <!-- VGS -->
-        <logging-starter.version>0.10.2</logging-starter.version>
-
-        <!-- Misc -->
-        <hibernate.version>5.2.18.Final</hibernate.version>
-        <p6spy.version>3.0.0</p6spy.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
-        <guava.version>24.1.1-jre</guava.version>
-        <apache.commons.version>3.11</apache.commons.version>
-        <h2.version>1.4.191</h2.version>
-        <lombok.version>1.18.16</lombok.version>
-        <lombok.encoding>UTF-8</lombok.encoding>
-
-        <!-- Testing -->
-        <junit.version>5.7.0</junit.version>
-        <hamcrest.version>2.2</hamcrest.version>
-
-        <!-- Plugins -->
-        <maven-compiler.version>3.8.1</maven-compiler.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <lombok-maven-plugin.version>1.18.16.0</lombok-maven-plugin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <maven.compiler.verbose>false</maven.compiler.verbose>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+        <maven.javadoc.failOnWarnings>false</maven.javadoc.failOnWarnings>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
+    <organization>
+        <name>Very Good Security</name>
+        <url>https://www.verygoodsecurity.com</url>
+    </organization>
+    <scm>
+        <url>https://github.com/verygoodsecurity/track</url>
+        <connection>scm:git:https://github.com/verygoodsecurity/track.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:verygoodsecurity/track.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    <issueManagement />
     <distributionManagement>
         <repository>
-            <id>vault-http-release</id>
-            <name>AWS Release Repository</name>
+            <id>verygood-release-repo</id>
+            <name>Very Good Release Repository</name>
             <url>s3://vault-dev-01-audits-01-artifact-19k6160zpr44j/software/release/</url>
         </repository>
-
         <snapshotRepository>
-            <id>vault-http-snapshot</id>
-            <name>AWS Snapshot Repository</name>
+            <id>verygood-snapshot-repo</id>
+            <name>Very Good Snapshot Repository</name>
             <url>s3://vault-dev-01-audits-01-artifact-19k6160zpr44j/software/snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
-
     <pluginRepositories>
         <pluginRepository>
-            <id>jfrog</id>
-            <name>jfrog</name>
+            <id>bintray</id>
             <url>https://dl.bintray.com/vg/vgs-oss</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
     <repositories>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter</name>
-            <url>https://jcenter.bintray.com/</url>
-        </repository>
-
         <repository>
             <id>verygood-release-repo</id>
             <name>Very Good Release Repository</name>
@@ -81,7 +67,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
         <repository>
             <id>verygood-snapshot-repo</id>
             <name>Very Good Snapshot Repository</name>
@@ -94,86 +79,78 @@
             </snapshots>
         </repository>
     </repositories>
-
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.7.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-        <!-- VGS -->
+        <!--
         <dependency>
-            <groupId>com.verygood.security</groupId>
-            <artifactId>logging-core</artifactId>
-            <version>${logging-starter.version}</version>
-            <scope>provided</scope>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>[2.0,3.0.0-RC1)</version>
         </dependency>
-
-        <!-- Misc -->
+        -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>[2,3)</version>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
+            <version>[5.0,6.0.0.Alpha1)</version>
         </dependency>
-
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>[1.6,2.0.0-alpha0)</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${apache.commons.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>${commons-collections.version}</version>
-        </dependency>
-
-        <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
+            <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>p6spy</groupId>
             <artifactId>p6spy</artifactId>
-            <version>${p6spy.version}</version>
+            <version>3.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1-jre</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
-        <finalName>${project.artifactId}</finalName>
         <extensions>
             <extension>
                 <groupId>io.vgs.tools</groupId>
@@ -181,83 +158,223 @@
                 <version>1.4.5</version>
             </extension>
         </extensions>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jarsigner-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-toolchains-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>6.0.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler.version}</version>
+                <artifactId>maven-enforcer-plugin</artifactId>
                 <configuration>
-                    <target>${maven.compiler.target}</target>
-                    <source>${maven.compiler.source}</source>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-sourcepath</arg>
-                        <arg>
-                            ${project.basedir}/src/main/java${path.separator}${project.basedir}/target/generated-sources/annotations${path.separator}/
-                        </arg>
-                    </compilerArgs>
+                    <rules>
+                        <requireMavenVersion>
+                            <version>3.3</version>
+                        </requireMavenVersion>
+                        <requirePluginVersions />
+                        <requireUpperBoundDeps />
+                    </rules>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>${lombok-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>delombok</goal>
+                            <goal>enforce</goal>
                         </goals>
-                        <configuration>
-                            <sourceDirectory>src/main/java</sourceDirectory>
-                            <addOutputDirectory>false</addOutputDirectory>
-                            <outputDirectory>${project.build.directory}/delombok</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.amashchenko.maven.plugin</groupId>
-                <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.15.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <verbose>true</verbose>
-                    <versionDigitToIncrement>2</versionDigitToIncrement>
-                    <releaseRebase>true</releaseRebase>
-                    <pushRemote>false</pushRemote>
-                    <skipTestProject>true</skipTestProject>
-                    <skipTag>true</skipTag>
-                    <allowSnapshots>true</allowSnapshots>
-                    <gitFlowConfig>
-                        <productionBranch>master</productionBranch>
-                        <developmentBranch>master</developmentBranch>
-                        <releaseBranchPrefix>release-</releaseBranchPrefix>
-                        <versionTagPrefix/>
-                    </gitFlowConfig>
-                    <commitMessages>
-                        <releaseStartMessage>update versions for @{version} release
-                        </releaseStartMessage>
-                        <releaseFinishMessage>update for next development version @{version}
-                        </releaseFinishMessage>
-                    </commitMessages>
+                    <failIfNoTests>false</failIfNoTests>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <quiet>true</quiet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <quiet>true</quiet>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <locales>en_US,uk_UA</locales>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

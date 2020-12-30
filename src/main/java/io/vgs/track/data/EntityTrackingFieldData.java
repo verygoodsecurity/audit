@@ -1,6 +1,6 @@
 package io.vgs.track.data;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 public class EntityTrackingFieldData {
   private final String name;
@@ -34,12 +34,12 @@ public class EntityTrackingFieldData {
     if (this == o) return true;
     if (!(o instanceof EntityTrackingFieldData)) return false;
     EntityTrackingFieldData that = (EntityTrackingFieldData) o;
-    return Objects.equal(this.name, that.name);
+    return Objects.equals(this.name, that.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name);
+    return Objects.hash(name);
   }
 
   @Override

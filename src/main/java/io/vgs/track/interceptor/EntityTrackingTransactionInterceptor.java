@@ -1,6 +1,6 @@
 package io.vgs.track.interceptor;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
+import io.vgs.track.utils.FieldUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Hibernate;
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -40,7 +39,6 @@ import io.vgs.track.utils.Utils;
 
 import static java.util.stream.Collectors.toList;
 
-@NotThreadSafe
 public class EntityTrackingTransactionInterceptor extends EmptyInterceptor implements EntityTrackingListenerAware {
   private static final Logger LOG = LoggerFactory.getLogger(EntityTrackingTransactionInterceptor.class);
   private static final String TRACK_AND_NOT_TRACK_ANNOTATIONS_ERROR_MSG = "The field %s should have either @Tracked or @NotTracked annotation";

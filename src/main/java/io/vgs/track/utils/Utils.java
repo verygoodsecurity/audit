@@ -1,24 +1,34 @@
 package io.vgs.track.utils;
 
-import com.google.common.base.Objects;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Objects;
 
 public class Utils {
 
-  private Utils() {
+  private static class ComparableComparator implements Comparator<Object> {
 
+    @Override
+    public int compare(final Object o1, final Object o2) {
+      final Comparable<Object> c1 = (Comparable<Object>) o1;
+      return c1.compareTo(o2);
+    }
+  }
+
+  private static final ComparableComparator COMPARABLE_COMPARATOR = new ComparableComparator();
+
+  private Utils() {
   }
 
   public static boolean equalsOrCompareEquals(Object oldValue, Object newValue) {
-    return Objects.equal(oldValue, newValue) || compareEquals(oldValue, newValue);
+    return Objects.equals(oldValue, newValue) || compareEquals(oldValue, newValue);
   }
 
   private static boolean compareEquals(Object first, Object second) {
-    return first instanceof Comparable && second instanceof Comparable
-        && ObjectUtils.compare((Comparable) first, (Comparable) second) == 0;
+    if (!(first instanceof Comparable) || !(second instanceof Comparable)) {
+      return false;
+    }
+    return Objects.compare(first, second, COMPARABLE_COMPARATOR) == 0;
   }
 
   //return true when: first = null, second = empty collection or vice versa

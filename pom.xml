@@ -30,7 +30,7 @@
     <scm>
         <url>https://github.com/verygoodsecurity/track</url>
         <connection>scm:git:https://github.com/verygoodsecurity/track.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:verygoodsecurity/track.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/verygoodsecurity/track.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <issueManagement />

@@ -4,7 +4,7 @@
 
     <groupId>io.vgs</groupId>
     <artifactId>vgs-track</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1-SNAPSHOT</version>
     <name>Track</name>
     <description>JPA annotations for tracking database changes.</description>
 
@@ -29,7 +29,7 @@
         <url>https://github.com/verygoodsecurity/track</url>
         <connection>scm:git:https://github.com/verygoodsecurity/track.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/verygoodsecurity/track.git</developerConnection>
-        <tag>4.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement />
     <distributionManagement>
